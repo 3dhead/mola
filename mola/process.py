@@ -1,6 +1,6 @@
+import subprocess
+import tempfile
 from typing import List
-
-import matplotlib.pyplot as plt
 
 import argparse
 import sys
@@ -22,12 +22,16 @@ def gradient(c1: Color, c2: Color, count: int) -> List[Color]:
 
 
 # noinspection PyUnusedLocal
-def list_palettes(params):
+def list_palettes(params, *_unused):
+    """
+    Prints list of all palettes available in the configuration
+    :param params: unused
+    """
     for palette_name in PALETTES.keys():
         print(palette_name)
 
 
-def colorize(params):
+def colorize(params, *_unused):
     if params.palette not in PALETTES:
         raise ValueError(f"Unknown palette {params.palette}")
 
@@ -82,21 +86,13 @@ def colorize(params):
     """
     io.imsave(params.output_file, matched)
 
-    """
-    Draw plot (TEMPORARY)
-    """
-    fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, sharex=True, sharey=True, figsize=(8, 3))
-    for aa in (ax1, ax2):
-        aa.set_axis_off()
 
-    ax1.imshow(image)
-    ax1.set_title('Source')
-
-    ax2.imshow(matched)
-    ax2.set_title('Matched')
-
-    plt.tight_layout()
-    plt.show()
+def feh(params, additional_params: List):
+    temporary_image = tempfile.NamedTemporaryFile(delete=False, suffix=".jpg")
+    params.output_file = temporary_image.name
+    temporary_image.close()
+    colorize(params)
+    subprocess.run(["feh"] + additional_params + [params.output_file])
 
 
 def run():
@@ -104,25 +100,44 @@ def run():
 
     subparsers = parser.add_subparsers(help='')
 
-    parser_a = subparsers.add_parser('colorize', help='colorize an image')
-    parser_a.add_argument("-p",
-                          "--palette",
-                          dest="palette",
-                          help="name of the palette to use",
-                          action="store",
-                          type=str)
-    parser_a.add_argument("image",
-                          help="image to colorize")
-    parser_a.add_argument("output_file",
-                          help="output file name")
-    parser_a.set_defaults(func=colorize)
+    """
+    mola colorize -p nord input.jpg output.jpg
+    """
+    parser_colorize = subparsers.add_parser('colorize', help='colorize an image')
+    parser_colorize.add_argument("-p",
+                                 "--palette",
+                                 dest="palette",
+                                 help="name of the palette to use",
+                                 action="store",
+                                 type=str)
+    parser_colorize.add_argument("image",
+                                 help="image to colorize")
+    parser_colorize.add_argument("output_file",
+                                 help="output file name")
+    parser_colorize.set_defaults(func=colorize)
 
-    # create the parser for the "b" command
-    parser_b = subparsers.add_parser('palettes', help='print list of available palettes')
-    parser_b.set_defaults(func=list_palettes)
+    """
+    mola palettes
+    """
+    parser_list_palettes = subparsers.add_parser('palettes', help='print list of available palettes')
+    parser_list_palettes.set_defaults(func=list_palettes)
 
-    args = parser.parse_args(sys.argv[1:])
-    args.func(args)
+    """
+    mola feh -p nord input.jpg (any additional feh arguments)
+    """
+    parser_feh = subparsers.add_parser('feh', help='colorize an image and set as background')
+    parser_feh.add_argument("-p",
+                            "--palette",
+                            dest="palette",
+                            help="name of the palette to use",
+                            action="store",
+                            type=str)
+    parser_feh.add_argument("image",
+                            help="image to colorize")
+    parser_feh.set_defaults(func=feh)
+
+    args, additional_params = parser.parse_known_args(sys.argv[1:])
+    args.func(args, additional_params)
 
 
 if __name__ == "__main__":
