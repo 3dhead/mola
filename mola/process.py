@@ -21,6 +21,12 @@ def gradient(c1: Color, c2: Color, count: int) -> List[Color]:
     return ([] + list(c1.range_to(c2, count)))[1:]
 
 
+# noinspection PyUnusedLocal
+def list_palettes(params):
+    for palette_name in PALETTES.keys():
+        print(palette_name)
+
+
 def colorize(params):
     if params.palette not in PALETTES:
         raise ValueError(f"Unknown palette {params.palette}")
@@ -95,18 +101,28 @@ def colorize(params):
 
 def run():
     parser = argparse.ArgumentParser(description="Colorize images with a specific palette")
-    parser.add_argument("-p",
-                        "--palette",
-                        dest="palette",
-                        help="name of the palette to use",
-                        action="store",
-                        type=str)
-    parser.add_argument("image",
-                        help="image to colorize")
-    parser.add_argument("output_file",
-                        help="output file name")
 
-    colorize(parser.parse_args(sys.argv[1:]))
+    subparsers = parser.add_subparsers(help='')
+
+    parser_a = subparsers.add_parser('colorize', help='colorize an image')
+    parser_a.add_argument("-p",
+                          "--palette",
+                          dest="palette",
+                          help="name of the palette to use",
+                          action="store",
+                          type=str)
+    parser_a.add_argument("image",
+                          help="image to colorize")
+    parser_a.add_argument("output_file",
+                          help="output file name")
+    parser_a.set_defaults(func=colorize)
+
+    # create the parser for the "b" command
+    parser_b = subparsers.add_parser('palettes', help='print list of available palettes')
+    parser_b.set_defaults(func=list_palettes)
+
+    args = parser.parse_args(sys.argv[1:])
+    args.func(args)
 
 
 if __name__ == "__main__":
