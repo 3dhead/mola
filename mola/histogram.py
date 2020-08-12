@@ -2,40 +2,26 @@ import matplotlib.pyplot as plt
 from PIL import Image
 from colour import Color
 
-from skimage import data, io
-from skimage import exposure
+from skimage import io
 from skimage.exposure import match_histograms
 
-image = io.imread('/home/maroslaw/Downloads/gontran-isnard-q6NvmanzdrU-unsplash.jpg')
+from mola.palettes import PALETTES
 
-img = Image.open('/home/maroslaw/Downloads/gontran-isnard-q6NvmanzdrU-unsplash.jpg').convert("L")
+image = io.imread('/home/maroslaw/Downloads/ben-den-engelsen-lQFEdIBghv0-unsplash.jpg')
+image_gray = io.imread('/home/maroslaw/Downloads/ben-den-engelsen-lQFEdIBghv0-unsplash.jpg', as_gray=True)
+
+img = Image.open('/home/maroslaw/Downloads/ben-den-engelsen-lQFEdIBghv0-unsplash.jpg').convert("L")
 
 histogram = img.histogram()
 index = histogram.index(max(histogram))
 
 
-# Color("black").range_to(Color(46, 52, 64), index)
-
 def darkness(color: Color) -> int:
     return int(round(255 * (0.299 * color.get_red() + 0.587 * color.get_green() + 0.114 * color.get_blue())))
 
 
-palette = [Color('#2e3440'),
-           Color('#3b4252'),
-           Color('#434c5e'),
-           Color('#4c566a'),
-           Color('#d8dee9'),
-           Color('#e5e9f0'),
-           Color('#eceff4'),
-           Color('#8fbcbb'),
-           Color('#88c0d0'),
-           Color('#81a1c1'),
-           Color('#5e81ac'),
-           Color('#bf616a'),
-           Color('#d08770'),
-           Color('#ebcb8b'),
-           Color('#a3be8c'),
-           Color('#b48ead')]
+palette = PALETTES['nord']
+
 palette.sort(key=lambda c: darkness(c))
 white = palette.pop()
 p_i = 0
