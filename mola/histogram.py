@@ -6,46 +6,66 @@ from skimage import data, io
 from skimage import exposure
 from skimage.exposure import match_histograms
 
-image = io.imread('/home/maroslaw/Downloads/ben-den-engelsen-lQFEdIBghv0-unsplash.jpg')
+image = io.imread('/home/maroslaw/Downloads/gontran-isnard-q6NvmanzdrU-unsplash.jpg')
 
-img = Image.open('/home/maroslaw/Downloads/ben-den-engelsen-lQFEdIBghv0-unsplash.jpg').convert("L")
+img = Image.open('/home/maroslaw/Downloads/gontran-isnard-q6NvmanzdrU-unsplash.jpg').convert("L")
 
 histogram = img.histogram()
 index = histogram.index(max(histogram))
 
+
 # Color("black").range_to(Color(46, 52, 64), index)
 
-palette = [Color('#2e3440'), Color('#5e81ac'), Color('#88c0d0'), Color('#8fbcbb'), Color('#d8dee9')]  # TODO order
+def darkness(color: Color) -> int:
+    return int(round(255 * (0.299 * color.get_red() + 0.587 * color.get_green() + 0.114 * color.get_blue())))
+
+
+palette = [Color('#2e3440'),
+           Color('#3b4252'),
+           Color('#434c5e'),
+           Color('#4c566a'),
+           Color('#d8dee9'),
+           Color('#e5e9f0'),
+           Color('#eceff4'),
+           Color('#8fbcbb'),
+           Color('#88c0d0'),
+           Color('#81a1c1'),
+           Color('#5e81ac'),
+           Color('#bf616a'),
+           Color('#d08770'),
+           Color('#ebcb8b'),
+           Color('#a3be8c'),
+           Color('#b48ead')]
+palette.sort(key=lambda c: darkness(c))
+white = palette.pop()
 p_i = 0
 
-i_cols = [Color("black")]
+i_cols = [palette.pop(0)]
 i_last = 0
 
 for i in range(len(histogram)):
-    gray_scale = int(round(255 * (
-            0.299 * palette[p_i].get_red() + 0.587 * palette[p_i].get_green() + 0.114 * palette[p_i].get_blue())))
-    if gray_scale == i:
+    if darkness(palette[p_i]) == i:
         tmp = []
         tmp.extend(i_cols[i_last].range_to(palette[p_i], i - i_last))
         i_cols.extend(tmp[1:])
         i_last = len(i_cols) - 1
 
 tmp = []
-tmp.extend(palette[p_i].range_to(Color("white"), len(histogram) - i_last))
+tmp.extend(palette[p_i].range_to(white, len(histogram) - i_last))
 i_cols.extend(tmp[1:])
+for i in range(len(i_cols)):
+    print(str(i_cols[i]) + " " + str(darkness(i_cols[i])))
 
 print(len(i_cols))
-width = 200
+width = img.size[0]
 height = int(sum(histogram) / width)
 reference = Image.new("RGB", (width, height), (255, 255, 255))
 offsetx = 0
 offsety = 0
 for i in range(len(i_cols)):
     lwidth = max(1, histogram[i])
-    print(str(i))
 
     while lwidth > 0:
-        print("   " + str(lwidth))
         cwidth = lwidth
         wrap = False
         if cwidth > width - offsetx:
