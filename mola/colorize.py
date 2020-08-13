@@ -9,10 +9,22 @@ from mola.palettes import PALETTES
 
 
 def gray(color: Color) -> int:
+    """
+    Calculate the gray scale of an RGB color
+    :param color: RGB color
+    :return: gray scale value
+    """
     return int(round(255 * (0.299 * color.get_red() + 0.587 * color.get_green() + 0.114 * color.get_blue())))
 
 
 def gradient(c1: Color, c2: Color, count: int) -> List[Color]:
+    """
+    Calculate a gradient of a given length between two colors
+    :param c1: first color
+    :param c2: second color
+    :param count: number of colors in the gradient
+    :return: list of colors in the gradient excluding the first color: (c1; c2>
+    """
     return ([] + list(c1.range_to(c2, count)))[1:]
 
 
@@ -31,6 +43,10 @@ def colorize(params, *_unused):
     """
     image = io.imread(params.image, as_gray=True)
     histogram, bin_centers = exposure.histogram(image)
+    # red, _ = exposure.histogram(image[:, :, 0])
+    # green, _ = exposure.histogram(image[:, :, 1])
+    # blue, _ = exposure.histogram(image[:, :, 2])
+    # histograms = [red, green, blue]
 
     """
     Prepare colors according to the histogram

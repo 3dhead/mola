@@ -7,6 +7,10 @@ from mola.palettes import list_palettes
 
 
 def run():
+    """
+    Set up argument parser and run
+    """
+
     parser = argparse.ArgumentParser(description="Colorize images with a specific palette")
 
     subparsers = parser.add_subparsers(help='')
