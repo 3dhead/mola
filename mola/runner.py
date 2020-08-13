@@ -1,9 +1,21 @@
 import argparse
+import logging
 import sys
 
 from mola.colorize import colorize
 from mola.feh import feh
 from mola.palettes import list_palettes
+
+
+def setup_logging(log_level: int):
+    """
+    Setup basic logging
+
+    :param log_level: minimum log level for emitting messages
+    """
+    log_format: str = "[%(asctime)s] %(levelname)s\t%(name)s: %(message)s"
+    logging.basicConfig(level=log_level, stream=sys.stdout,
+                        format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
 
 
 def run():
@@ -12,6 +24,15 @@ def run():
     """
 
     parser = argparse.ArgumentParser(description="Colorize images with a specific palette")
+
+    parser.add_argument(
+        "--debug",
+        dest="log_level",
+        help="set log level to DEBUG",
+        action="store_const",
+        const=logging.DEBUG,
+        default=logging.INFO
+    )
 
     subparsers = parser.add_subparsers(help='')
 
@@ -44,6 +65,9 @@ def run():
     parser_feh.set_defaults(func=feh)
 
     args, additional_params = parser.parse_known_args(sys.argv[1:])
+    setup_logging(args.log_level)
+
+    # TODO log additional_params
     args.func(args, additional_params)
 
 

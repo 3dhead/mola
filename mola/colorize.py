@@ -1,3 +1,5 @@
+import logging
+import time
 from typing import List
 
 import numpy
@@ -6,6 +8,8 @@ from skimage import io, exposure
 from skimage.exposure import match_histograms
 
 from mola.palettes import PALETTES
+
+LOG = logging.getLogger(__name__)
 
 
 def gray(color: Color) -> int:
@@ -32,6 +36,9 @@ def colorize(params, *_unused):
     if params.palette not in PALETTES:
         raise ValueError(f"Unknown palette {params.palette}")
 
+    LOG.info("Running colorize...")
+    start = time.time()
+
     """
     Fetch palette and sort by darkness
     """
@@ -41,8 +48,11 @@ def colorize(params, *_unused):
     """
     Read input image and prepare histogram
     """
+    now = time.time()
+    LOG.debug("Preparing histograms...")
     image = io.imread(params.image, as_gray=True)
     histogram, bin_centers = exposure.histogram(image)
+    LOG.debug("Done in {:.2f}s".format(time.time() - now))
     # red, _ = exposure.histogram(image[:, :, 0])
     # green, _ = exposure.histogram(image[:, :, 1])
     # blue, _ = exposure.histogram(image[:, :, 2])
@@ -51,6 +61,8 @@ def colorize(params, *_unused):
     """
     Prepare colors according to the histogram
     """
+    now = time.time()
+    LOG.debug("Preparing palette...")
     white_representation: Color = palette.pop()
     colors: List[Color] = [palette.pop(0)]
     i_last: int = 0
@@ -63,10 +75,13 @@ def colorize(params, *_unused):
             if len(palette) == 0:
                 break
     colors.extend(gradient(colors[len(colors) - 1], white_representation, len(histogram) - len(colors) + 1))
+    LOG.debug("Done in {:.2f}s".format(time.time() - now))
 
     """
     Prepare reference palette image
     """
+    now = time.time()
+    LOG.debug("Preparing reference image...")
     reference = [[]]
     for i in range(len(colors)):
         count = histogram[i]
@@ -74,15 +89,24 @@ def colorize(params, *_unused):
             reference[0].extend(
                 count * [[int(round(colors[i].get_red() * 255)), int(round(colors[i].get_green() * 255)),
                           int(round(colors[i].get_blue() * 255))]])
+    LOG.debug("Done in {:.2f}s".format(time.time() - now))
 
     """
     Match histograms
     """
+    now = time.time()
+    LOG.debug("Running histogram match...")
     image = io.imread(params.image)
     reference = numpy.array(reference)
     matched = match_histograms(image, reference, multichannel=True)
+    LOG.debug("Done in {:.2f}s".format(time.time() - now))
 
     """
     Save output file
     """
+    now = time.time()
+    LOG.debug(f"Saving output to {params.output_file}...")
     io.imsave(params.output_file, matched)
+    LOG.debug("Done in {:.2f}s".format(time.time() - now))
+
+    LOG.info("Total time: {:.2f}s".format(time.time() - start))
