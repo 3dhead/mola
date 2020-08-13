@@ -1,4 +1,4 @@
 #!/usr/bin/env python3
 
-from mola.app import run
+from mola.runner import run
 run()
