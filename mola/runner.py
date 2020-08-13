@@ -15,12 +15,8 @@ def run():
     mola colorize -p nord input.jpg output.jpg
     """
     parser_colorize = subparsers.add_parser('colorize', help='colorize an image')
-    parser_colorize.add_argument("-p",
-                                 "--palette",
-                                 dest="palette",
-                                 help="name of the palette to use",
-                                 action="store",
-                                 type=str)
+    parser_colorize.add_argument("palette",
+                                 help="name of the palette to use")
     parser_colorize.add_argument("image",
                                  help="image to colorize")
     parser_colorize.add_argument("output_file",
@@ -37,12 +33,8 @@ def run():
     mola feh -p nord input.jpg (any additional feh arguments)
     """
     parser_feh = subparsers.add_parser('feh', help='colorize an image and set as background')
-    parser_feh.add_argument("-p",
-                            "--palette",
-                            dest="palette",
-                            help="name of the palette to use",
-                            action="store",
-                            type=str)
+    parser_feh.add_argument("palette",
+                            help="name of the palette to use")
     parser_feh.add_argument("image",
                             help="image to colorize")
     parser_feh.set_defaults(func=feh)

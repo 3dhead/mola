@@ -23,6 +23,19 @@ See https://www.nordtheme.com/
 PALETTES['nord'] = of(
     ['#2e3440', '#3b4252', '#434c5e', '#4c566a', '#d8dee9', '#e5e9f0', '#eceff4', '#8fbcbb', '#88c0d0', '#81a1c1',
      '#5e81ac', '#bf616a', '#d08770', '#ebcb8b', '#a3be8c', '#b48ead'])
+"""
+See https://github.com/morhetz/gruvbox
+"""
+PALETTES['gruvbox'] = of(
+    ['#282828', '#cc241d', '#98971a', '#d79921', '#458588', '#b16286', '#689d6a', '#a89984', '#928374', '#fb4934',
+     '#b8bb26', '#fabd2f', '#83a598', '#d3869b', '#8ec07c', '#ebdbb2', '#1d2021', '#3c3836', '#504945', '#665c54',
+     '#7c6f64', '#928374', '#d65d0e', '#32302f', '#bdae93', '#d5c4a1', '#ebdbb2', '#fbf1c7', '#fe8019'])
+"""
+See https://ethanschoonover.com/solarized/
+"""
+PALETTES['solarized'] = of(
+    ['#1c1c1c', '#262626', '#585858', '#626262', '#808080', '#8a8a8a', '#e4e4e4', '#ffffd7', '#af8700', '#d75f00',
+     '#d70000', '#af005f', '#5f5faf', '#0087ff', '#00afaf', '#5f8700'])
 
 
 def list_palettes(*_unused):
