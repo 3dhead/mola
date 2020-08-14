@@ -1,5 +1,7 @@
 import logging
+import sys
 import time
+from math import ceil
 from typing import List
 
 import numpy
@@ -33,8 +35,19 @@ def gradient(c1: Color, c2: Color, count: int) -> List[Color]:
 
 
 def colorize(params, *_unused):
+    """
+    Verify selected palette
+    """
     if params.palette not in PALETTES:
-        raise ValueError(f"Unknown palette {params.palette}")
+        LOG.error(f"Unknown palette {params.palette}")
+        sys.exit(1)
+
+    """
+    Verify selected precision
+    """
+    if params.precision <= 0 or params.precision > 1:
+        LOG.error(f"--precision must be in range: (0, 1> ({params.precision} given)")
+        sys.exit(1)
 
     LOG.info("Running colorize...")
     start = time.time()
@@ -81,14 +94,13 @@ def colorize(params, *_unused):
     Prepare reference palette image
     """
     now = time.time()
-    LOG.debug("Preparing reference image...")
+    LOG.debug(f"Preparing reference image with precision {params.precision}...")
     reference = [[]]
     for i in range(len(colors)):
-        count = histogram[i]
-        if count > 0:
-            reference[0].extend(
-                count * [[int(round(colors[i].get_red() * 255)), int(round(colors[i].get_green() * 255)),
-                          int(round(colors[i].get_blue() * 255))]])
+        count = int(ceil(histogram[i] * params.precision))
+        reference[0].extend(
+            count * [[int(round(colors[i].get_red() * 255)), int(round(colors[i].get_green() * 255)),
+                      int(round(colors[i].get_blue() * 255))]])
     LOG.debug("Done in {:.2f}s".format(time.time() - now))
 
     """
