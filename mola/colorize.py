@@ -50,7 +50,6 @@ def colorize(params, *_unused):
         sys.exit(1)
 
     LOG.info("Running colorize...")
-    start = time.time()
 
     """
     Fetch palette and sort by darkness
@@ -120,5 +119,3 @@ def colorize(params, *_unused):
     LOG.debug(f"Saving output to {params.output_file}...")
     io.imsave(params.output_file, matched)
     LOG.debug("Done in {:.2f}s".format(time.time() - now))
-
-    LOG.info("Total time: {:.2f}s".format(time.time() - start))

@@ -1,6 +1,7 @@
 import argparse
 import logging
 import sys
+import time
 
 from mola.colorize import colorize
 from mola.feh import feh
@@ -81,8 +82,12 @@ def run():
     args, additional_params = parser.parse_known_args(sys.argv[1:])
     setup_logging(args.log_level)
 
-    # TODO log additional_params
+    log = logging.getLogger(__name__)
+    if len(additional_params) > 0:
+        log.debug(f"unknown attributes: {additional_params}")
+    start = time.time()
     args.func(args, additional_params)
+    log.info("Done. That took {:.2f}s".format(time.time() - start))
 
 
 if __name__ == "__main__":

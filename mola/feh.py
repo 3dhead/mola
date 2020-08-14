@@ -1,7 +1,6 @@
 import logging
 import subprocess
 import tempfile
-import time
 from typing import List
 
 from mola.colorize import colorize
@@ -16,7 +15,6 @@ def feh(params, additional_params: List):
     :param additional_params: CLI arguments to be passed to feh
     """
     with tempfile.NamedTemporaryFile(suffix=".jpg") as temp:
-
         """
         Using a temporary file for colorizer output
         """
@@ -31,8 +29,7 @@ def feh(params, additional_params: List):
         """
         Pass the output along with additional CLI arguments to feh
         """
-        now = time.time()
         LOG.info("Running feh...")
-        # TODO log arguments
-        subprocess.run(["feh"] + additional_params + [params.output_file])
-        LOG.debug("Done in {:.2f}s".format(time.time() - now))
+        feh_attributes = additional_params + [params.output_file]
+        LOG.debug(f"feh attributes: {feh_attributes}")
+        subprocess.run(["feh"] + feh_attributes)
