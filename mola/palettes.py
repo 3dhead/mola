@@ -9,7 +9,7 @@ def of(colors: List[str]) -> List[Color]:
     :param colors: list of HEX colors for a palette
     :return: list of colour.Color object
     """
-    return [Color(color_hex) for color_hex in colors]
+    return [Color(color_hex) for color_hex in set(colors)]
 
 
 """

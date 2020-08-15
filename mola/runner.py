@@ -49,7 +49,7 @@ def run():
                                  default=0.9
                                  )
     parser_colorize.add_argument("palette",
-                                 help="name of the palette to use")
+                                 help="name of the palette to use or a list of HEX colors to use")
     parser_colorize.add_argument("image",
                                  help="image to colorize")
     parser_colorize.add_argument("output_file",
@@ -74,7 +74,7 @@ def run():
                             default=0.9
                             )
     parser_feh.add_argument("palette",
-                            help="name of the palette to use")
+                            help="name of the palette to use or a list of HEX colors to use")
     parser_feh.add_argument("image",
                             help="image to colorize")
     parser_feh.set_defaults(func=feh)

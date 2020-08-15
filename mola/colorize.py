@@ -1,7 +1,9 @@
 import logging
+import re
 import sys
 import time
 from math import ceil
+from re import Pattern
 from typing import List
 
 import numpy
@@ -9,9 +11,14 @@ from colour import Color
 from skimage import io, exposure
 from skimage.exposure import match_histograms
 
-from mola.palettes import PALETTES
+from mola.palettes import PALETTES, of
 
 LOG = logging.getLogger(__name__)
+
+"""
+Pattern for matching HEX colors
+"""
+HEX_PATTERN: Pattern = re.compile(r"(#[A-Fa-f0-9]{6}|#[A-Fa-f0-9]{3})")
 
 
 def gray(color: Color) -> int:
@@ -38,9 +45,31 @@ def colorize(params, *_unused):
     """
     Verify selected palette
     """
+    palette = None
     if params.palette not in PALETTES:
-        LOG.error(f"Unknown palette {params.palette}")
+        LOG.debug(f"Unmatched palette '{params.palette}'. Trying to find HEX color codes in the argument.")
+
+        """
+        Try to discover colors directly from the string
+        """
+        match = HEX_PATTERN.findall(params.palette)
+        if match and len(match) > 0:
+            LOG.debug(f"Regexp matching produced {len(match)} colors")
+            palette = of(match)
+
+        if not palette:
+            LOG.error(f"Unknown palette {params.palette}")
+            sys.exit(1)
+    else:
+        palette = PALETTES[params.palette_name]
+
+    """
+    Verify and sort palette
+    """
+    if len(palette) < 3:
+        LOG.error(f"A palette needs more than 2 colors ({len(palette)} given)")
         sys.exit(1)
+    palette.sort(key=lambda c: gray(c))
 
     """
     Verify selected precision
@@ -50,12 +79,6 @@ def colorize(params, *_unused):
         sys.exit(1)
 
     LOG.info("Running colorize...")
-
-    """
-    Fetch palette and sort by darkness
-    """
-    palette = PALETTES[params.palette]
-    palette.sort(key=lambda c: gray(c))
 
     """
     Read input image and prepare histogram
