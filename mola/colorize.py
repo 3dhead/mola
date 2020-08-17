@@ -61,7 +61,7 @@ def colorize(params, *_unused):
             LOG.error(f"Unknown palette {params.palette}")
             sys.exit(1)
     else:
-        palette = PALETTES[params.palette_name]
+        palette = PALETTES[params.palette]
 
     """
     Verify and sort palette
