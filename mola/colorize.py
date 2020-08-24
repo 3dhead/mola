@@ -10,6 +10,7 @@ import numpy
 from colour import Color
 from skimage import io, exposure
 from skimage.exposure import match_histograms
+from sty import fg
 
 from mola.palettes import PALETTES, of
 
@@ -116,10 +117,13 @@ def colorize(params, *_unused):
     Prepare reference palette image
     """
     now = time.time()
-    LOG.debug(f"Preparing reference image with precision {params.precision}...")
+    LOG.debug(f"Preparing reference palette with precision {params.precision}...")
     reference = [[]]
     for i in range(len(colors)):
         count = int(ceil(histogram[i] * params.precision))
+        if params.log_level == logging.DEBUG:
+            print(fg(int(round(colors[i].get_red() * 255)), int(round(colors[i].get_green() * 255)),
+                     int(round(colors[i].get_blue() * 255))) + '█' + fg.rs, end='\n' if (i + 1) % 64 == 0 else '')
         reference[0].extend(
             count * [[int(round(colors[i].get_red() * 255)), int(round(colors[i].get_green() * 255)),
                       int(round(colors[i].get_blue() * 255))]])
