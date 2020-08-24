@@ -8,17 +8,6 @@ from mola.feh import feh
 from mola.palettes import list_palettes
 
 
-def setup_logging(log_level: int):
-    """
-    Setup basic logging
-
-    :param log_level: minimum log level for emitting messages
-    """
-    log_format: str = "[%(asctime)s] %(levelname)s\t%(name)s: %(message)s"
-    logging.basicConfig(level=log_level, stream=sys.stdout,
-                        format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
-
-
 def run():
     """
     Set up argument parser and run
@@ -80,7 +69,7 @@ def run():
     parser_feh.set_defaults(func=feh)
 
     args, additional_params = parser.parse_known_args(sys.argv[1:])
-    setup_logging(args.log_level)
+    logging.basicConfig(level=args.log_level, stream=sys.stdout, format="%(levelname)s\t%(name)s: %(message)s")
 
     log = logging.getLogger(__name__)
     if len(additional_params) > 0:
