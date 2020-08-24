@@ -121,12 +121,14 @@ def colorize(params, *_unused):
     reference = [[]]
     for i in range(len(colors)):
         count = int(ceil(histogram[i] * params.precision))
+        red = int(round(colors[i].get_red() * 255))
+        green = int(round(colors[i].get_green() * 255))
+        blue = int(round(colors[i].get_blue() * 255))
         if params.log_level == logging.DEBUG:
-            print(fg(int(round(colors[i].get_red() * 255)), int(round(colors[i].get_green() * 255)),
-                     int(round(colors[i].get_blue() * 255))) + '█' + fg.rs, end='\n' if (i + 1) % 64 == 0 else '')
-        reference[0].extend(
-            count * [[int(round(colors[i].get_red() * 255)), int(round(colors[i].get_green() * 255)),
-                      int(round(colors[i].get_blue() * 255))]])
+            if i % 32 == 0:
+                print('\t', end='')
+            print(f'{fg(red, green, blue)}█{fg.rs}', end='\n' if (i + 1) % 32 == 0 else '')
+        reference[0].extend(count * [[red, green, blue]])
     LOG.debug("Done in {:.2f}s".format(time.time() - now))
 
     """
