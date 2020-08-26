@@ -146,5 +146,10 @@ def colorize(params, *_unused):
     """
     now = time.time()
     LOG.debug(f"Saving output to {params.output_file}...")
-    io.imsave(params.output_file, matched)
+    try:
+        io.imsave(params.output_file, matched, quality=100)
+    except IOError as err:
+        LOG.info(f"Failed to save file to {params.output_file}. Use --debug for more information")
+        LOG.debug(err)
+        sys.exit(1)
     LOG.debug("Done in {:.2f}s".format(time.time() - now))
