@@ -15,20 +15,14 @@ def feh(params, additional_params: List):
     :param additional_params: CLI arguments to be passed to feh
     """
     with tempfile.NamedTemporaryFile(suffix=".jpg") as temp:
-        """
-        Using a temporary file for colorizer output
-        """
+        # using a temporary file for colorizer output
         params.output_file = temp.name
         LOG.debug(f"Using temporary path '{params.output_file}'")
 
-        """
-        Colorize input image
-        """
+        # colorize input image
         colorize(params)
 
-        """
-        Pass the output along with additional CLI arguments to feh
-        """
+        # pass the output along with additional CLI arguments to feh
         LOG.info("Running feh...")
         feh_attributes = additional_params + [params.output_file]
         LOG.debug(f"feh attributes: {feh_attributes}")
