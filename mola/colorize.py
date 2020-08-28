@@ -12,7 +12,7 @@ from skimage.color import rgb2gray
 from skimage.exposure import match_histograms
 from sty import fg
 
-from mola.palettes import PALETTES, of
+from mola.themes import THEMES, of
 
 LOG = logging.getLogger(__name__)
 
@@ -20,28 +20,28 @@ LOG = logging.getLogger(__name__)
 HEX_PATTERN: Pattern = re.compile(r"(#[A-Fa-f0-9]{6}|#[A-Fa-f0-9]{3})")
 
 
-def get_palette(params):
-    palette = None
-    if params.palette not in PALETTES:
-        LOG.debug(f"Unmatched palette '{params.palette}'. Trying to find HEX color codes in the argument.")
+def get_theme(params):
+    theme = None
+    if params.theme not in THEMES:
+        LOG.debug(f"Unmatched theme '{params.theme}'. Trying to find HEX color codes in the argument.")
 
         # Try to discover colors directly from the string
-        match = HEX_PATTERN.findall(params.palette)
+        match = HEX_PATTERN.findall(params.theme)
         if match and len(match) > 0:
             LOG.debug(f"Regexp matching produced {len(match)} colors")
-            palette = of(match)
+            theme = of(match)
 
-        if not palette:
-            LOG.error(f"Unknown palette {params.palette}")
+        if not theme:
+            LOG.error(f"Unknown theme {params.theme}")
             sys.exit(1)
     else:
-        palette = PALETTES[params.palette]
+        theme = THEMES[params.theme]
 
-    # Verify palette
-    if len(palette) < 3:
-        LOG.error(f"A palette needs more than 2 colors ({len(palette)} given)")
+    # Verify theme
+    if len(theme) < 3:
+        LOG.error(f"A theme needs more than 2 colors ({len(theme)} given)")
         sys.exit(1)
-    return palette
+    return theme
 
 
 def gray(color: Color) -> int:
@@ -64,24 +64,24 @@ def gradient(c1: Color, c2: Color, count: int) -> List[Color]:
     return ([] + list(c1.range_to(c2, count)))[1:]
 
 
-def match_colors(histogram, palette: List[Color]) -> List[Color]:
+def match_colors(histogram, theme: List[Color]) -> List[Color]:
     """
 
     :param histogram:
-    :param palette:
+    :param theme:
     :return:
     """
-    palette.sort(key=lambda c: gray(c))
-    white_representation: Color = palette.pop()
-    colors: List[Color] = [palette.pop(0)]
+    theme.sort(key=lambda c: gray(c))
+    white_representation: Color = theme.pop()
+    colors: List[Color] = [theme.pop(0)]
     i_last: int = 0
     for i in range(len(histogram)):
-        color = palette[0]
+        color = theme[0]
         if gray(color) == i:
-            palette.pop(0)
+            theme.pop(0)
             colors.extend(gradient(colors[len(colors) - 1], color, i - i_last))
             i_last = i
-            if len(palette) == 0:
+            if len(theme) == 0:
                 break
     colors.extend(gradient(colors[len(colors) - 1], white_representation, len(histogram) - len(colors) + 1))
     return colors
@@ -123,16 +123,16 @@ def create_reference_image(colors: List[Color], histogram, precision: float):
     return reference
 
 
-def colorize_image(image, palette: List[Color], precision: float):
+def colorize_image(image, theme: List[Color], precision: float):
     """
 
     :param image:
-    :param palette:
+    :param theme:
     :param precision:
     :return:
     """
     histogram = to_histogram(image)
-    reference = create_reference_image(match_colors(histogram, palette), histogram, precision)
+    reference = create_reference_image(match_colors(histogram, theme), histogram, precision)
     return match_histograms(image, numpy.array(reference), multichannel=True)
 
 
@@ -142,8 +142,8 @@ def colorize(params, *_unused):
         LOG.error(f"--precision must be in range: (0, 1> ({params.precision} given)")
         sys.exit(1)
 
-    # determine target palette
-    palette = get_palette(params)
+    # determine target theme
+    theme = get_theme(params)
 
     try:
         # read source image
@@ -154,7 +154,7 @@ def colorize(params, *_unused):
         sys.exit(1)
 
     # colorize image
-    matched = colorize_image(image, palette, params.precision)
+    matched = colorize_image(image, theme, params.precision)
 
     try:
         # save output

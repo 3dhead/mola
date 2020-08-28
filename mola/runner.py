@@ -5,7 +5,7 @@ import time
 
 from mola.colorize import colorize
 from mola.feh import feh
-from mola.palettes import list_palettes
+from mola.themes import list_themes
 
 
 def run():
@@ -13,12 +13,12 @@ def run():
     Set up argument parser and run
     """
 
-    parser = argparse.ArgumentParser(description="Colorize images with a specific palette")
+    parser = argparse.ArgumentParser(description="Colorize images with a specific theme")
 
     parser.add_argument(
-        "--debug",
+        "-v",
         dest="log_level",
-        help="set log level to DEBUG",
+        help="enable verbose logging",
         action="store_const",
         const=logging.DEBUG,
         default=logging.INFO
@@ -37,8 +37,8 @@ def run():
                                  type=float,
                                  default=0.9
                                  )
-    parser_colorize.add_argument("palette",
-                                 help="name of the palette to use or a list of HEX colors to use")
+    parser_colorize.add_argument("theme",
+                                 help="name of the theme to use or a list of HEX colors to use")
     parser_colorize.add_argument("image",
                                  help="image to colorize")
     parser_colorize.add_argument("output_file",
@@ -46,10 +46,10 @@ def run():
     parser_colorize.set_defaults(func=colorize)
 
     """
-    mola palettes
+    mola themes
     """
-    parser_list_palettes = subparsers.add_parser('palettes', help='print list of available palettes')
-    parser_list_palettes.set_defaults(func=list_palettes)
+    parser_list_themes = subparsers.add_parser('themes', help='print list of available themes')
+    parser_list_themes.set_defaults(func=list_themes)
 
     """
     mola feh -p nord input.jpg (any additional feh arguments)
@@ -62,8 +62,8 @@ def run():
                             type=float,
                             default=0.9
                             )
-    parser_feh.add_argument("palette",
-                            help="name of the palette to use or a list of HEX colors to use")
+    parser_feh.add_argument("theme",
+                            help="name of the theme to use or a list of HEX colors to use")
     parser_feh.add_argument("image",
                             help="image to colorize")
     parser_feh.set_defaults(func=feh)
@@ -73,7 +73,7 @@ def run():
 
     log = logging.getLogger(__name__)
     if len(additional_params) > 0:
-        log.debug(f"unknown attributes: {additional_params}")
+        log.debug(f"Unknown arguments: {additional_params}")
     start = time.time()
     args.func(args, additional_params)
     log.info("Done. That took {:.2f}s".format(time.time() - start))
