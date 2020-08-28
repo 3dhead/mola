@@ -9,15 +9,31 @@ In order to list existing color themes:
 
 `$ mola -l`
 
+If your terminal support true color you can also preview themes with:
+
+`$ mola -v -l`
+
+Colorize input image using a nord theme and store the result in a file:
+
 `$ mola -t nord input.jpg output.jpg`
 
-`$ mola -t nord input.jpg --bg-scale`
+Colorize input image using a nord theme and set as wallpaper using `feh`:
 
-`$ mola -c #e3e3e3 #d5d5d5 #ffff00 input.jpg --bg-scale`
+`$ mola -t nord input.jpg`
 
-`$ mola -t gruvebox -c #e3e3e3 #d5d5d5 #ffff00 input.jpg --bg-scale`
+Previous command defaults to `--bg-scale` attribute in `feh`, however other options can also be passed as parameter to `mola`:
 
-In order to enable verbose logs use the `-v` option.
+`$ mola -t nord input.jpg --bg-fill`
+
+To specify colors manually instead of using a theme:
+
+`$ mola -c #fff -c #e3e3e3 -c #d5d5d5 -c #ffff00 input.jpg --bg-center`
+
+You can also combine a theme with additional colors as in:
+
+`$ mola -t gruvebox -c #e3e3e3 -c #d5d5d5 -c #ffff00 input.jpg --bg-scale`
+
+To enable verbose logs use the `-v` option.
 
 ## Results
 

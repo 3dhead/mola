@@ -15,14 +15,9 @@ def run():
 
     parser = argparse.ArgumentParser(description="Colorize images with a specific theme")
 
-    parser.add_argument(
-        "-v",
-        dest="log_level",
-        help="enable verbose logging",
-        action="store_const",
-        const=logging.DEBUG,
-        default=logging.INFO
-    )
+    # verbose logging
+    parser.add_argument("-v", dest="log_level", help="enable verbose logging", action="store_const",
+                        const=logging.DEBUG, default=logging.INFO)
 
     subparsers = parser.add_subparsers(help='')
 
