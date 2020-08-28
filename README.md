@@ -49,13 +49,7 @@ To enable verbose logs use the `-v` option.
 
 ```shell
 $ git clone https://github.com/xmonarch/mola.git
-```
-
-```shell
 $ cd mola
-```
-
-```shell
 $ sudo pip install .
 ```
 
