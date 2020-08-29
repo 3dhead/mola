@@ -1,18 +1,15 @@
 import logging
 import re
-import sys
 from math import ceil
 from re import Pattern
 from typing import List
 
 import numpy
 from colour import Color
-from skimage import io, exposure
+from skimage import exposure
 from skimage.color import rgb2gray
 from skimage.exposure import match_histograms
 from sty import fg
-
-from mola.themes import THEMES, of
 
 LOG = logging.getLogger(__name__)
 
@@ -20,28 +17,11 @@ LOG = logging.getLogger(__name__)
 HEX_PATTERN: Pattern = re.compile(r"(#[A-Fa-f0-9]{6}|#[A-Fa-f0-9]{3})")
 
 
-def get_theme(params):
-    theme = None
-    if params.theme not in THEMES:
-        LOG.debug(f"Unmatched theme '{params.theme}'. Trying to find HEX color codes in the argument.")
-
-        # Try to discover colors directly from the string
-        match = HEX_PATTERN.findall(params.theme)
-        if match and len(match) > 0:
-            LOG.debug(f"Regexp matching produced {len(match)} colors")
-            theme = of(match)
-
-        if not theme:
-            LOG.error(f"Unknown theme {params.theme}")
-            sys.exit(1)
+def hex_color(value: str) -> str:
+    if HEX_PATTERN.fullmatch(value):
+        return value
     else:
-        theme = THEMES[params.theme]
-
-    # Verify theme
-    if len(theme) < 3:
-        LOG.error(f"A theme needs more than 2 colors ({len(theme)} given)")
-        sys.exit(1)
-    return theme
+        raise ValueError
 
 
 def gray(color: Color) -> int:
@@ -123,7 +103,7 @@ def create_reference_image(colors: List[Color], histogram, precision: float):
     return reference
 
 
-def colorize_image(image, theme: List[Color], precision: float):
+def colorize(image, theme: List[Color], precision: float):
     """
 
     :param image:
@@ -134,32 +114,3 @@ def colorize_image(image, theme: List[Color], precision: float):
     histogram = to_histogram(image)
     reference = create_reference_image(match_colors(histogram, theme), histogram, precision)
     return match_histograms(image, numpy.array(reference), multichannel=True)
-
-
-def colorize(params, *_unused):
-    # verify selected precision
-    if params.precision <= 0 or params.precision > 1:
-        LOG.error(f"--precision must be in range: (0, 1> ({params.precision} given)")
-        sys.exit(1)
-
-    # determine target theme
-    theme = get_theme(params)
-
-    try:
-        # read source image
-        image = io.imread(params.image)
-    except IOError as err:
-        LOG.info(f"Failed to read file {params.image}. Use --debug for more information")
-        LOG.debug(err)
-        sys.exit(1)
-
-    # colorize image
-    matched = colorize_image(image, theme, params.precision)
-
-    try:
-        # save output
-        io.imsave(params.output_file, matched, quality=100)
-    except IOError as err:
-        LOG.info(f"Failed to save file to {params.output_file}. Use --debug for more information")
-        LOG.debug(err)
-        sys.exit(1)
