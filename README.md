@@ -21,7 +21,7 @@ $ mola -t nord --bg-fill input.jpg
 
 To specify colors manually instead of using a theme:
 ```shell
-$ mola -c #fff -c "#e3e3e3" -c "#d5d5d5" -c "#ffff00" --bg-center input.jpg
+$ mola -c "#fff" -c "#e3e3e3" -c "#d5d5d5" -c "#ffff00" --bg-center input.jpg
 ```
 
 You can also combine a theme with additional colors as in:
