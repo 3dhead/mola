@@ -18,6 +18,11 @@ HEX_PATTERN: Pattern = re.compile(r"(#[A-Fa-f0-9]{6}|#[A-Fa-f0-9]{3})")
 
 
 def hex_color(value: str) -> str:
+    """
+    Validate a string is a HEX color representation
+    :param value: potentially a HEX color
+    :return: the same value, error raised the value is not correct
+    """
     if HEX_PATTERN.fullmatch(value):
         return value
     else:
@@ -46,10 +51,10 @@ def gradient(c1: Color, c2: Color, count: int) -> List[Color]:
 
 def match_colors(histogram, theme: List[Color]) -> List[Color]:
     """
-
-    :param histogram:
-    :param theme:
-    :return:
+    Match color theme to the histogram to produce 256 colors used to create the reference image
+    :param histogram: image histogram
+    :param theme: selected colors
+    :return: 256 color theme
     """
     theme.sort(key=lambda c: gray(c))
     white_representation: Color = theme.pop()
@@ -69,9 +74,9 @@ def match_colors(histogram, theme: List[Color]) -> List[Color]:
 
 def to_histogram(image):
     """
-
-    :param image:
-    :return:
+    Obtain histogram of an image
+    :param image: RGB image
+    :return:gray scale histogram
     """
     histogram, bin_centers = exposure.histogram(rgb2gray(image))
     # red, _ = exposure.histogram(image[:, :, 0])
@@ -83,11 +88,12 @@ def to_histogram(image):
 
 def create_reference_image(colors: List[Color], histogram, precision: float):
     """
-
-    :param colors:
-    :param histogram:
-    :param precision:
-    :return:
+    Produce a reference image used for histogram match against the original input image. The 256 color theme
+    is used to create pixels roughly reflecting the histogram of the input image.
+    :param colors: 256 color theme
+    :param histogram: histogram of the input image
+    :param precision: controls quality vs speed by reducing the number of pixels in the reference image
+    :return: reference image for histogram match
     """
     reference = [[]]
     for i in range(len(colors)):
@@ -105,11 +111,11 @@ def create_reference_image(colors: List[Color], histogram, precision: float):
 
 def colorize(image, theme: List[Color], precision: float):
     """
-
-    :param image:
-    :param theme:
-    :param precision:
-    :return:
+    Colorize input image with a selected list of colors.
+    :param image: input image
+    :param theme: selected list of colors
+    :param precision: selected precision of the algorithm
+    :return: colorized image
     """
     histogram = to_histogram(image)
     reference = create_reference_image(match_colors(histogram, theme), histogram, precision)
