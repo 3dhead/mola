@@ -13,11 +13,7 @@ class TestCLIArguments(unittest.TestCase):
         self.assertIsNone(args.output)
         self.assertIsNone(args.theme)
         self.assertIsNone(args.colors)
-        self.assertFalse(args.bg_center)
-        self.assertFalse(args.bg_fill)
-        self.assertFalse(args.bg_max)
-        self.assertFalse(args.bg_scale)
-        self.assertFalse(args.bg_tile)
+        self.assertIsNone(args.feh_opt)
 
     def test_theme(self):
         args = self.parser.parse_args('-t gruvbox -t nord input.jpg'.split())
@@ -27,7 +23,7 @@ class TestCLIArguments(unittest.TestCase):
         self._fail('-t unknown input.jpg')
 
     def test_colors(self):
-        args = self.parser.parse_args('-t nord -c "#fff" -c "#e3e3e3" -c "#d5d5d5" -c "#ffff00" input.jpg'.split())
+        args = self.parser.parse_args('-t nord -c #fff -c #e3e3e3 -c #d5d5d5 -c #ffff00 input.jpg'.split())
         self.assertEqual("input.jpg", args.input)
         self.assertEqual("nord", args.theme)
         self.assertEqual(4, len(args.colors))
@@ -37,7 +33,7 @@ class TestCLIArguments(unittest.TestCase):
         self.assertEqual("#ffff00", args.colors[3])
 
         # validates HEX
-        self._fail('-t nord -c "#fffz" input.jpg')
+        self._fail('-t nord -c #fffz input.jpg')
 
     def test_output(self):
         args = self.parser.parse_args('-o output.jpg input.jpg'.split())
@@ -47,11 +43,12 @@ class TestCLIArguments(unittest.TestCase):
         args = self.parser.parse_args('--bg-scale input.jpg'.split())
         self.assertEqual("input.jpg", args.input)
         self.assertIsNone(args.output)
-        self.assertFalse(args.bg_center)
-        self.assertFalse(args.bg_fill)
-        self.assertFalse(args.bg_max)
-        self.assertTrue(args.bg_scale)
-        self.assertFalse(args.bg_tile)
+        self.assertEqual("--bg-scale", args.feh_opt)
+
+        args = self.parser.parse_args('--bg-max input.jpg'.split())
+        self.assertEqual("input.jpg", args.input)
+        self.assertIsNone(args.output)
+        self.assertEqual("--bg-max", args.feh_opt)
 
         self._fail('-o output.jpg --bg-scale input.jpg')
 
