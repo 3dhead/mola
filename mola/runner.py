@@ -11,7 +11,7 @@ from skimage import io
 
 from mola.colorize import colorize
 from mola.themes import THEMES, of
-from mola.utils import hex_color, print_theme
+from mola.utils import hex_color, print_theme, HEX_PATTERN
 
 
 def parser() -> argparse.ArgumentParser:
@@ -21,9 +21,14 @@ def parser() -> argparse.ArgumentParser:
     args.add_argument("-v", "--verbose", dest="log_level", help="enable verbose logging", action="store_const",
                       const=logging.DEBUG, default=logging.ERROR)
 
+    source = args.add_mutually_exclusive_group()
+
     # theme
-    args.add_argument("-t", dest="theme", help="name of the theme to use", choices=THEMES.keys(),
-                      required=False)
+    source.add_argument("-t", dest="theme", help="name of the theme to use", choices=THEMES.keys(),
+                        required=False)
+
+    # file to parse
+    source.add_argument("-f", dest="theme_file", help="file to parse for colors", required=False)
 
     # list of colors
     args.add_argument('-c', dest="colors", help="list of HEX colors to use", type=hex_color, action='append',
@@ -71,8 +76,22 @@ def run():
         if args.theme not in THEMES.keys():
             log.error(f"Unmatched theme '{args.theme}'")
             sys.exit(1)
-        log.debug(f"Using theme '{args.theme}'.")
+        log.debug(f"Using theme '{args.theme}'")
         theme += THEMES[args.theme]
+    if args.theme_file:
+        try:
+            with open(args.theme_file, 'r') as theme_file:
+                log.debug(f"Parsing file '{args.theme_file}' for colors")
+                colors = []
+                for line in theme_file.readlines():
+                    match = HEX_PATTERN.findall(line)
+                    colors += match if match and len(match) > 0 else []
+                log.debug(f"Extracted {len(colors)} colors from the theme file")
+                theme += colors
+        except IOError as err:
+            log.error(f"Failed to read file '{args.theme_file}'")
+            log.debug(err)
+            sys.exit(1)
     if args.colors:
         log.debug(f"Parsed {len(args.colors)} colors from cli: {args.colors}")
         theme += args.colors
