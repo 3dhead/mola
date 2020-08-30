@@ -52,3 +52,4 @@ def preview_themes():
         theme.sort(key=lambda c: gray(c))
         print_theme(theme, block_size=4, line_size=4 * 256 + 1)
         print()
+        print()

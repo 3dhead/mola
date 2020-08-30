@@ -31,6 +31,7 @@ def extend_theme(histograms, theme: List[Color]) -> List[Color]:
             if len(theme) == 0:
                 break
     colors.extend(gradient(colors[len(colors) - 1], white_representation, 256 - len(colors) + 1))
+    theme.clear()
     theme.extend(colors)
     return theme
 
