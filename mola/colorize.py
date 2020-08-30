@@ -6,7 +6,7 @@ import numpy
 from colour import Color
 from skimage.exposure import match_histograms
 
-from mola.utils import gray, gradient, to_array, closest
+from mola.utils import gray, gradient, closest, RED, GREEN, BLUE
 
 LOG = logging.getLogger(__name__)
 
@@ -41,9 +41,9 @@ def to_histogram(image):
     :param image: RGB image
     :return: RGB histograms
     """
-    red, _ = numpy.histogram(image[:, :, 0].ravel(), bins=256)
-    green, _ = numpy.histogram(image[:, :, 1].ravel(), bins=256)
-    blue, _ = numpy.histogram(image[:, :, 2].ravel(), bins=256)
+    red, _ = numpy.histogram(image[:, :, RED].ravel(), bins=256)
+    green, _ = numpy.histogram(image[:, :, GREEN].ravel(), bins=256)
+    blue, _ = numpy.histogram(image[:, :, BLUE].ravel(), bins=256)
     return [red, green, blue]
 
 
@@ -59,7 +59,8 @@ def create_reference_image(colors: List[Color], histograms, precision: float):
     reference = [[]]
     for i in range(len(colors)):
         # put the calculated number of pixels in the current color in the reference image
-        reference[0].extend(int(ceil(histograms[closest(colors[i], i)][i] * precision)) * [to_array(colors[i])])
+        closest_histogram, color_as_array = closest(colors[i], i)
+        reference[0].extend(int(ceil(histograms[closest_histogram][i] * precision)) * [color_as_array])
     return reference
 
 

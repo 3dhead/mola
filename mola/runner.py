@@ -8,11 +8,10 @@ import time
 
 import numpy
 from skimage import io
-from sty import fg
 
 from mola.colorize import colorize
 from mola.themes import THEMES, of
-from mola.utils import to_array, hex_color
+from mola.utils import hex_color, print_theme
 
 
 def parser() -> argparse.ArgumentParser:
@@ -108,11 +107,7 @@ def run():
     colorized: numpy.ndarray = colorize(image, theme, args.precision)
     if args.log_level == logging.DEBUG:
         log.debug(f"Dumping full 256 color theme:")
-        for i in range(len(theme)):
-            if i % 32 == 0:
-                print('\t', end='')
-            color = to_array(theme[i])
-            print(f'{fg(*color)}█{fg.rs}', end='\n' if (i + 1) % 32 == 0 else '')
+        print_theme(theme)
 
     try:
         # save output
@@ -124,6 +119,7 @@ def run():
         sys.exit(1)
 
     if call_feh:
+        # call feh to set wallpaper
         feh_attributes = [temp.name, args.feh_opt if args.feh_opt else '--bg-scale']
         log.debug(f"Running feh with attributes... {feh_attributes}")
         subprocess.run(["feh"] + feh_attributes)

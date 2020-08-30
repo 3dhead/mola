@@ -1,11 +1,17 @@
-# Pattern for matching HEX colors
 import re
 from re import Pattern
 from typing import List
 
 from colour import Color
+from sty import fg
 
+# Pattern for matching HEX colors
 HEX_PATTERN: Pattern = re.compile(r"(#[A-Fa-f0-9]{6}|#[A-Fa-f0-9]{3})")
+
+# channel indexes
+RED = 0
+GREEN = 1
+BLUE = 2
 
 
 def hex_color(value: str) -> str:
@@ -40,35 +46,34 @@ def gradient(c1: Color, c2: Color, count: int) -> List[Color]:
     return ([] + list(c1.range_to(c2, count)))[1:]
 
 
-def cred(color: Color) -> int:
-    return int(round(color.get_red() * 255))
-
-
-def cgreen(color: Color) -> int:
-    return int(round(color.get_green() * 255))
-
-
-def cblue(color: Color) -> int:
-    return int(round(color.get_blue() * 255))
-
-
 def to_array(color: Color) -> List[int]:
-    return [cred(color), cgreen(color), cblue(color)]
+    """
+    Represent a color object as an array of integers with values for separate RGB channels
+    :param color: color object
+    :return: list of RGB channel values in the color
+    """
+    return [int(round(color.get_red() * 255)), int(round(color.get_green() * 255)), int(round(color.get_blue() * 255))]
 
 
-def closest(color: Color, index: int) -> int:
-    red_diff = abs(cred(color) - index)
-    blue_diff = abs(cblue(color) - index)
-    green_diff = abs(cgreen(color) - index)
+def closest(color: Color, channel_value: int) -> (int, List[int]):
+    """
+    Select channel of the color with value closest to the given one
+    :param color: color to test
+    :param channel_value: value of the color in channel
+    :return: index of the channel with the closest value and color represented as an array of integers
+    """
+    color_as_array = to_array(color)
+    diffs = [abs(color_as_array[RED] - channel_value), abs(color_as_array[GREEN] - channel_value),
+             abs(color_as_array[BLUE] - channel_value)]
+    return diffs.index(min(diffs)), color_as_array
 
-    # select the number of pixels from the histogram of the channel which value is the
-    # closest to the current color
-    if red_diff < blue_diff and red_diff < green_diff:
-        # red
-        return 0
-    elif green_diff < blue_diff and green_diff < red_diff:
-        # green
-        return 1
-    else:
-        # blue
-        return 2
+
+def print_theme(theme: List[Color]):
+    """
+    Print theme of colors in 32 character blocks
+    :param theme: color theme
+    """
+    for i in range(len(theme)):
+        if i % 32 == 0:
+            print('\t', end='')
+        print(f'{fg(*to_array(theme[i]))}█{fg.rs}', end='\n' if (i + 1) % 32 == 0 else '')
