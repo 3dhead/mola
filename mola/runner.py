@@ -39,11 +39,11 @@ def parser() -> argparse.ArgumentParser:
     output.add_argument("-o", dest="output", help="output file", required=False)
 
     # feh options
-    output.add_argument("--bg-center", action="store_true", required=False)
-    output.add_argument("--bg-fill", action="store_true", required=False)
-    output.add_argument("--bg-max", action="store_true", required=False)
-    output.add_argument("--bg-scale", action="store_true", required=False)
-    output.add_argument("--bg-tile", action="store_true", required=False)
+    output.add_argument("--bg-center", dest="feh_opt", action="store_const", const="--bg-center", required=False)
+    output.add_argument("--bg-fill", dest="feh_opt", action="store_const", const="--bg-fill", required=False)
+    output.add_argument("--bg-max", dest="feh_opt", action="store_const", const="--bg-max", required=False)
+    output.add_argument("--bg-scale", dest="feh_opt", action="store_const", const="--bg-scale", required=False)
+    output.add_argument("--bg-tile", dest="feh_opt", action="store_const", const="--bg-tile", required=False)
 
     return args
 
@@ -53,7 +53,7 @@ def run():
     Set up argument parser and run
     """
     args = parser().parse_args(sys.argv[1:])
-    logging.basicConfig(level=args.log_level, stream=sys.stdout, format="%(name)s: %(message)s")
+    logging.basicConfig(level=args.log_level, stream=sys.stdout, format="%(levelname)s\t%(name)s: %(message)s")
 
     log = logging.getLogger(__name__)
 
@@ -67,12 +67,12 @@ def run():
     theme = []
     if args.theme:
         if args.theme not in THEMES.keys():
-            log.error(f"Unmatched theme '{args.theme}'.")
+            log.error(f"Unmatched theme '{args.theme}'")
             sys.exit(1)
         log.debug(f"Using theme '{args.theme}'.")
         theme += THEMES[args.theme]
     if args.colors:
-        log.debug(f"Using {len(args.colors)} colors'")
+        log.debug(f"Parsed {len(args.colors)} colors from cli: {args.colors}")
         theme += args.colors
 
     # Verify theme
@@ -84,7 +84,7 @@ def run():
     if not args.output:
         # check if feh is installed
         if not shutil.which("feh"):
-            log.error("'feh' doesn't seem to be available in the system'")
+            log.error("'feh' doesn't seem to be available in the system")
             sys.exit(1)
         with tempfile.NamedTemporaryFile(suffix=".jpg") as temp:  # TODO source format
             args.output = temp.name
@@ -100,6 +100,7 @@ def run():
         sys.exit(1)
 
     # run colorizing
+    log.debug(f"Running colorize with precision {args.precision}")
     colorized = colorize(image, of(theme), args.precision)
 
     try:
@@ -112,7 +113,7 @@ def run():
         sys.exit(1)
 
     if call_feh:
-        feh_attributes = [temp.name]
+        feh_attributes = [temp.name, args.feh_opt if args.feh_opt else '--bg-scale']
         log.debug(f"Running feh with attributes... {feh_attributes}")
         subprocess.run(["feh"] + feh_attributes)
 
