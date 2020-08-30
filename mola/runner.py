@@ -10,7 +10,7 @@ import numpy
 from skimage import io
 
 from mola.colorize import colorize
-from mola.themes import THEMES, of
+from mola.themes import THEMES, of, preview_themes
 from mola.utils import hex_color, print_theme, HEX_PATTERN
 
 
@@ -59,7 +59,14 @@ def run():
     """
     Set up argument parser and run
     """
-    args = parser().parse_args(sys.argv[1:])
+    cli = sys.argv[1:]
+
+    # no arguments: preview themes
+    if len(cli) == 0:
+        preview_themes()
+        sys.exit(0)
+
+    args = parser().parse_args(cli)
     logging.basicConfig(level=args.log_level, stream=sys.stdout, format="%(levelname)s\t%(name)s: %(message)s")
 
     log = logging.getLogger(__name__)
@@ -126,7 +133,7 @@ def run():
     colorized: numpy.ndarray = colorize(image, theme, args.precision)
     if args.log_level == logging.DEBUG:
         log.debug(f"Dumping full 256 color theme:")
-        print_theme(theme)
+        print_theme(theme, prefix='\t')
 
     try:
         # save output

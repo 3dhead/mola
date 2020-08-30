@@ -68,12 +68,16 @@ def closest(color: Color, channel_value: int) -> (int, List[int]):
     return diffs.index(min(diffs)), color_as_array
 
 
-def print_theme(theme: List[Color]):
+def print_theme(theme: List[Color], block_size: int = 1, line_size: int = 32, prefix: str = ''):
     """
     Print theme of colors in 32 character blocks
     :param theme: color theme
+    :param block_size: length of line block of a single color
+    :param line_size: length of line of colors
+    :param prefix: prefix of everyline of colors
     """
+    block = '█' * block_size
     for i in range(len(theme)):
         if i % 32 == 0:
-            print('\t', end='')
-        print(f'{fg(*to_array(theme[i]))}█{fg.rs}', end='\n' if (i + 1) % 32 == 0 else '')
+            print(prefix, end='')
+        print(f'{fg(*to_array(theme[i]))}{block}{fg.rs}', end='\n' if (i + 1) % line_size == 0 else '')
