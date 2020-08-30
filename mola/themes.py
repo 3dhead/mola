@@ -47,7 +47,7 @@ def preview_themes():
     Prints list of all themes available in the configuration
     """
     for theme_name in THEMES.keys():
-        print(f"{theme_name} (by {BY[theme_name]}")
+        print(f"{theme_name} (credit: {BY[theme_name]})")
         theme = of(THEMES[theme_name])
         theme.sort(key=lambda c: gray(c))
         print_theme(theme, block_size=4, line_size=4 * 256 + 1)
