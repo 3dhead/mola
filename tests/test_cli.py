@@ -50,6 +50,7 @@ class TestCLIArguments(unittest.TestCase):
         self.assertIsNone(args.output)
         self.assertEqual("--bg-max", args.feh_opt)
 
+        # conflicting options: output and feh
         self._fail('-o output.jpg --bg-scale input.jpg')
 
     def _fail(self, command: str):

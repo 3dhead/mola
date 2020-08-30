@@ -6,10 +6,13 @@ import sys
 import tempfile
 import time
 
+import numpy
 from skimage import io
+from sty import fg
 
-from mola.colorize import hex_color, colorize
+from mola.colorize import colorize
 from mola.themes import THEMES, of
+from mola.utils import to_array, hex_color
 
 
 def parser() -> argparse.ArgumentParser:
@@ -17,7 +20,7 @@ def parser() -> argparse.ArgumentParser:
 
     # verbose logging
     args.add_argument("-v", "--verbose", dest="log_level", help="enable verbose logging", action="store_const",
-                      const=logging.DEBUG, default=logging.INFO)
+                      const=logging.DEBUG, default=logging.ERROR)
 
     # theme
     args.add_argument("-t", dest="theme", help="name of the theme to use", choices=THEMES.keys(),
@@ -93,7 +96,7 @@ def run():
     try:
         # read source image
         log.debug(f"Using input file '{args.input}'")
-        image = io.imread(args.input)
+        image: numpy.ndarray = io.imread(args.input)
     except IOError as err:
         log.error(f"Failed to read file {args.input}. Use --debug for more information")
         log.debug(err)
@@ -101,7 +104,15 @@ def run():
 
     # run colorizing
     log.debug(f"Running colorize with precision {args.precision}")
-    colorized = colorize(image, of(theme), args.precision)
+    theme = of(theme)
+    colorized: numpy.ndarray = colorize(image, theme, args.precision)
+    if args.log_level == logging.DEBUG:
+        log.debug(f"Dumping full 256 color theme:")
+        for i in range(len(theme)):
+            if i % 32 == 0:
+                print('\t', end='')
+            color = to_array(theme[i])
+            print(f'{fg(*color)}█{fg.rs}', end='\n' if (i + 1) % 32 == 0 else '')
 
     try:
         # save output
