@@ -25,26 +25,26 @@ def parser() -> argparse.ArgumentParser:
     source = args.add_mutually_exclusive_group()
 
     # theme
-    source.add_argument("-t", dest="theme", help="name of the theme to use", choices=THEMES.keys(),
+    source.add_argument("-t", "--theme", dest="theme", help="name of the theme to use", choices=THEMES.keys(),
                         required=False)
 
     # file to parse
-    source.add_argument("-f", dest="theme_file", help="file to parse for colors", required=False)
+    source.add_argument("-f", "--file", dest="theme_file", help="file to parse for colors", required=False)
 
     # list of colors
-    args.add_argument('-c', dest="colors", help="list of HEX colors to use", type=hex_color, action='append',
+    args.add_argument('-c', "--color", dest="color", help="list of HEX colors to use", type=hex_color, action='append',
                       required=False)
 
     # precision
-    args.add_argument("-p", dest="precision", help="Processing precision in range (0; 1>, 1 being the slowest",
-                      type=float, default=0.9)
+    args.add_argument("-p", "--precision", dest="precision", type=int, default=100,
+                      help="Processing precision in range 1-100, 100 being the slowest but most accurate")
 
     # input image
     args.add_argument("input", help="image to colorize")
 
     # output image - if not provided mola will run feh --bg-scale with the output instead
     output = args.add_mutually_exclusive_group()
-    output.add_argument("-o", dest="output", help="output file", required=False)
+    output.add_argument("-o", "--output", dest="output", help="output file", required=False)
 
     # feh options
     output.add_argument("--bg-center", dest="feh_opt", action="store_const", const="--bg-center", required=False)
@@ -74,8 +74,8 @@ def run():
 
     start = time.time()
 
-    if args.precision <= 0 or args.precision > 1:
-        log.error(f"--precision must be in range: (0, 1> ({args.precision} given)")
+    if args.precision < 1 or args.precision > 100:
+        log.error(f"Precision value must be in range 1-100 ({args.precision} given)")
         sys.exit(1)
 
     # determine target theme
@@ -100,9 +100,9 @@ def run():
             log.error(f"Failed to read file '{args.theme_file}'")
             log.debug(err)
             sys.exit(1)
-    if args.colors:
-        log.debug(f"Parsed {len(args.colors)} colors from cli: {args.colors}")
-        theme += args.colors
+    if args.color:
+        log.debug(f"Parsed {len(args.color)} colors from cli: {args.color}")
+        theme += args.color
 
     # Verify theme
     if len(theme) < 3:

@@ -5,6 +5,7 @@ from typing import List
 import numpy
 from colour import Color
 from skimage.exposure import match_histograms
+from skimage.transform import resize
 
 from mola.utils import gray, gradient, closest, RED, GREEN, BLUE
 
@@ -36,36 +37,38 @@ def extend_theme(histograms, theme: List[Color]) -> List[Color]:
     return theme
 
 
-def to_histogram(image):
+def to_histogram(image, precision: int):
     """
     Obtain histograms of an image
     :param image: RGB image
+    :param precision:
     :return: RGB histograms
     """
+    if precision < 100:
+        image = resize(image, (image.shape[0] * precision // 100, image.shape[1] * precision // 100))
     red, _ = numpy.histogram(image[:, :, RED].ravel(), bins=256)
     green, _ = numpy.histogram(image[:, :, GREEN].ravel(), bins=256)
     blue, _ = numpy.histogram(image[:, :, BLUE].ravel(), bins=256)
     return [red, green, blue]
 
 
-def create_reference_image(colors: List[Color], histograms, precision: float):
+def create_reference_image(colors: List[Color], histograms):
     """
     Produce a reference image used for histogram match against the original input image. The 256 color theme
     is used to create pixels roughly reflecting the histogram of the input image.
     :param colors: 256 color theme
     :param histograms: histograms of the input image
-    :param precision: controls quality vs speed by reducing the number of pixels in the reference image
     :return: reference image for histogram match
     """
     reference = [[]]
     for i in range(len(colors)):
         # put the calculated number of pixels in the current color in the reference image
         closest_histogram, color_as_array = closest(colors[i], i)
-        reference[0].extend(int(ceil(histograms[closest_histogram][i] * precision)) * [color_as_array])
+        reference[0].extend(int(ceil(histograms[closest_histogram][i])) * [color_as_array])
     return reference
 
 
-def colorize(image: numpy.ndarray, theme: List[Color], precision: float) -> numpy.ndarray:
+def colorize(image: numpy.ndarray, theme: List[Color], precision: int) -> numpy.ndarray:
     """
     Colorize input image with a selected list of colors.
     :param image: input image
@@ -73,6 +76,6 @@ def colorize(image: numpy.ndarray, theme: List[Color], precision: float) -> nump
     :param precision: selected precision of the algorithm
     :return: colorized image
     """
-    histograms = to_histogram(image)
-    reference: List = create_reference_image(extend_theme(histograms, theme), histograms, precision)
+    histograms = to_histogram(image, precision)
+    reference: List = create_reference_image(extend_theme(histograms, theme), histograms)
     return match_histograms(image, numpy.array(reference), multichannel=True)

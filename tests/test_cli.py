@@ -9,10 +9,10 @@ class TestCLIArguments(unittest.TestCase):
     def test_defaults(self):
         args = self.parser.parse_args('input.jpg'.split())
         self.assertEqual("input.jpg", args.input)
-        self.assertEqual(0.9, args.precision)
+        self.assertEqual(100, args.precision)
         self.assertIsNone(args.output)
         self.assertIsNone(args.theme)
-        self.assertIsNone(args.colors)
+        self.assertIsNone(args.color)
         self.assertIsNone(args.feh_opt)
 
     def test_theme(self):
@@ -26,11 +26,11 @@ class TestCLIArguments(unittest.TestCase):
         args = self.parser.parse_args('-t nord -c #fff -c #e3e3e3 -c #d5d5d5 -c #ffff00 input.jpg'.split())
         self.assertEqual("input.jpg", args.input)
         self.assertEqual("nord", args.theme)
-        self.assertEqual(4, len(args.colors))
-        self.assertEqual("#fff", args.colors[0])
-        self.assertEqual("#e3e3e3", args.colors[1])
-        self.assertEqual("#d5d5d5", args.colors[2])
-        self.assertEqual("#ffff00", args.colors[3])
+        self.assertEqual(4, len(args.color))
+        self.assertEqual("#fff", args.color[0])
+        self.assertEqual("#e3e3e3", args.color[1])
+        self.assertEqual("#d5d5d5", args.color[2])
+        self.assertEqual("#ffff00", args.color[3])
 
         # validates HEX
         self._fail('-t nord -c #fffz input.jpg')

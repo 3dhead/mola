@@ -39,6 +39,12 @@ To preview pre-configured themes simply run `mola` without any arguments:
 $ mola
 ``` 
 
+If the processing is taking too long it's possible to control the decrease the coloring precision by using the `-p` flag, 
+however the results will be less accurate:  
+```shell
+$ mola -t nord -p 50 input.jpg
+```
+
 To enable verbose logs use the `-v` option.
 
 ## Results
