@@ -11,8 +11,8 @@ import numpy
 from skimage import io
 
 from mola.colorize import colorize
-from mola.themes import THEMES, of, preview_themes
-from mola.utils import hex_color, print_theme, HEX_PATTERN
+from mola.themes import THEMES, preview_themes
+from mola.utils import hex_color, print_theme, HEX_PATTERN, as_colors
 
 
 def parser() -> argparse.ArgumentParser:
@@ -128,7 +128,7 @@ def run():
 
     # run colorizing
     log.debug(f"Running colorize with precision {args.precision}")
-    theme = of(theme)
+    theme = as_colors(theme)
     colorized: numpy.ndarray = colorize(image, theme, args.precision)
     if args.log_level == logging.DEBUG:
         log.debug(f"Dumping full 256 color theme:")
@@ -150,7 +150,7 @@ def run():
     if call_feh:
         # call feh to set wallpaper
         feh_attributes = [temp.name, '--no-fehbg', args.feh_opt if args.feh_opt else '--bg-scale']
-        log.debug(f"Running feh with attributes... {feh_attributes}")
+        log.debug(f"Running feh with attributes: {feh_attributes}")
         subprocess.run(["feh"] + feh_attributes)
 
     log.debug("Done. That took {:.2f}s".format(time.time() - start))

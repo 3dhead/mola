@@ -74,10 +74,19 @@ def print_theme(theme: List[Color], block_size: int = 1, line_size: int = 32, pr
     :param theme: color theme
     :param block_size: length of line block of a single color
     :param line_size: length of line of colors
-    :param prefix: prefix of everyline of colors
+    :param prefix: prefix of every line of colors
     """
     block = '█' * block_size
     for i in range(len(theme)):
         if i % 32 == 0:
             print(prefix, end='')
         print(f'{fg(*to_array(theme[i]))}{block}{fg.rs}', end='\n' if (i + 1) % line_size == 0 else '')
+
+
+def as_colors(colors: List[str]) -> List[Color]:
+    """
+    Convert list of HEX color representations into a list of color objects
+    :param colors: list of HEX colors for a theme
+    :return: list of colour.Color object
+    """
+    return [Color(color_hex) for color_hex in set(colors)]
