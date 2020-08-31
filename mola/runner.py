@@ -1,5 +1,6 @@
 import argparse
 import logging
+import os
 import shutil
 import subprocess
 import sys
@@ -114,8 +115,6 @@ def run():
         if not shutil.which("feh"):
             log.error("'feh' doesn't seem to be available in the system")
             sys.exit(1)
-        with tempfile.NamedTemporaryFile(suffix=".jpg") as temp:  # TODO source format
-            args.output = temp.name
         call_feh = True
 
     try:
@@ -137,8 +136,12 @@ def run():
 
     try:
         # save output
+        if call_feh:
+            _, file_extension = os.path.splitext(args.input)
+            with tempfile.NamedTemporaryFile(suffix=file_extension) as temp:
+                args.output = temp.name
         log.debug(f"Using output path '{args.output}'")
-        io.imsave(args.output, colorized, quality=100)
+        io.imsave(args.output, colorized)
     except IOError as err:
         log.error(f"Failed to save file to {args.output}. Use -v for more information")
         log.debug(err)
@@ -146,7 +149,7 @@ def run():
 
     if call_feh:
         # call feh to set wallpaper
-        feh_attributes = [temp.name, args.feh_opt if args.feh_opt else '--bg-scale']
+        feh_attributes = [temp.name, '--no-fehbg', args.feh_opt if args.feh_opt else '--bg-scale']
         log.debug(f"Running feh with attributes... {feh_attributes}")
         subprocess.run(["feh"] + feh_attributes)
 
