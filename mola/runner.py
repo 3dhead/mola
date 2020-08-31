@@ -121,6 +121,10 @@ def run():
         # read source image
         log.debug(f"Using input file '{args.input}'")
         image: numpy.ndarray = io.imread(args.input)
+        if len(image.shape) != 3 or image.shape[2] != 3:
+            # validate the input image is RGB
+            log.error(f"Input image doesn't appear to be a color image")
+            sys.exit(1)
     except IOError as err:
         log.error(f"Failed to read file {args.input}. Use --debug for more information")
         log.debug(err)
