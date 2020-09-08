@@ -47,6 +47,8 @@ def gradient(c1: Color, c2: Color, count: int) -> List[Color]:
     for i in range(1, count):
         color = Color(hsl=colors[i - 1].get_hsl())
         color.set_luminance(color.get_luminance() + (c2.get_luminance() - c1.get_luminance()) / count)
+        color.set_hue(color.get_hue() + (c2.get_hue() - c1.get_hue()) / count)
+        color.set_saturation(color.get_saturation() + (c2.get_saturation() - c1.get_saturation()) / count)
         colors.append(color)
     return colors[1:]
 

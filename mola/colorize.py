@@ -46,7 +46,7 @@ def create_theme(histograms, theme: List[Color]) -> List[Color]:
     :param theme: selected colors
     :return: 256 color theme
     """
-    theme.sort(key=lambda c: luminance(c))
+    theme.sort(key=lambda color: luminance(color))
     white: Color = theme.pop()
     black: Color = theme.pop(0)
     channel_themes = []
