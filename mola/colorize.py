@@ -34,7 +34,7 @@ def channel_theme(theme: List[Color], channel: int, white: Color, black: Color) 
                 c_theme[last_filled + 1 + i] = fill[i]
         last_filled = index
 
-    print_theme(c_theme)
+    print_theme(c_theme, f"Theme for channel: {channel}")
 
     return c_theme
 

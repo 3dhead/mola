@@ -1,9 +1,9 @@
+import logging
 import re
 from re import Pattern
 from typing import List
 
 from colour import Color
-from sty import fg
 
 # Pattern for matching HEX colors
 HEX_PATTERN: Pattern = re.compile(r"(#[A-Fa-f0-9]{6}|#[A-Fa-f0-9]{3})")
@@ -12,6 +12,8 @@ HEX_PATTERN: Pattern = re.compile(r"(#[A-Fa-f0-9]{6}|#[A-Fa-f0-9]{3})")
 RED = 0
 GREEN = 1
 BLUE = 2
+
+LOG = logging.getLogger(__name__)
 
 
 def hex_color(value: str) -> str:
@@ -62,19 +64,28 @@ def to_array(color: Color) -> List[int]:
     return [int(round(color.get_red() * 255)), int(round(color.get_green() * 255)), int(round(color.get_blue() * 255))]
 
 
-def print_theme(theme: List[Color], block_size: int = 1, line_size: int = 32, prefix: str = ''):
+def print_theme(theme: List[Color], title: str, block_size: int = 1, line_size: int = 32, prefix: str = ''):
     """
     Print theme of colors in 32 character blocks
     :param theme: color theme
+    :param title: title for the printed theme
     :param block_size: length of line block of a single color
     :param line_size: length of line of colors
     :param prefix: prefix of every line of colors
     """
-    block = '█' * block_size
-    for i in range(len(theme)):
-        if i % 32 == 0:
-            print(prefix, end='')
-        print(f'{fg(*to_array(theme[i]))}{block}{fg.rs}', end='\n' if (i + 1) % line_size == 0 else '')
+    if LOG.isEnabledFor(logging.DEBUG):
+        try:
+            # noinspection PyPackageRequirements
+            from sty import fg
+            LOG.debug(title)
+            block = '█' * block_size
+            for i in range(len(theme)):
+                if i % 32 == 0:
+                    print(prefix, end='')
+                print(f'{fg(*to_array(theme[i]))}{block}{fg.rs}', end='\n' if (i + 1) % line_size == 0 else '')
+        except ImportError:
+            # sty not available
+            pass
 
 
 def as_colors(colors: List[str]) -> List[Color]:

@@ -128,9 +128,7 @@ def run():
     log.debug(f"Running colorize with precision {args.precision}")
     theme = as_colors(theme)
     colorized: numpy.ndarray = colorize(image, theme, args.precision)
-    if args.log_level == logging.DEBUG:
-        log.debug(f"Dumping full 256 color theme:")
-        print_theme(theme)
+    print_theme(theme, f"Dumping full 256 color theme:")
 
     try:
         # save output
