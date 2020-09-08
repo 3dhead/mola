@@ -99,8 +99,8 @@ def run():
         theme += args.color
 
     # Verify theme
-    if len(theme) < 3:
-        log.error(f"A theme needs more than 2 colors ({len(theme)} given)")
+    if 256 < len(theme) < 3:
+        log.error(f"A theme needs more than 2 colors but less than 257 ({len(theme)} given)")
         sys.exit(1)
 
     call_feh = False

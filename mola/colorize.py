@@ -60,9 +60,9 @@ def create_theme(histograms, theme: List[Color]) -> List[Color]:
             # append black since this won't be in the reference image anyway - no values in histogram
             theme.append(Color())
             continue
-        red_ratio = histograms[RED][i] / total
-        green_ratio = histograms[GREEN][i] / total
-        blue_ratio = histograms[BLUE][i] / total
+        red_part = histograms[RED][i] / total
+        green_part = histograms[GREEN][i] / total
+        blue_part = histograms[BLUE][i] / total
 
         red = channel_themes[RED][i]
         green = channel_themes[GREEN][i]
@@ -70,11 +70,11 @@ def create_theme(histograms, theme: List[Color]) -> List[Color]:
 
         # linear interpolation in the HSL space
         c = Color()
-        c.set_hue(red_ratio * red.get_hue() + green_ratio * green.get_hue() + blue_ratio * blue.get_hue())
+        c.set_hue(red_part * red.get_hue() + green_part * green.get_hue() + blue_part * blue.get_hue())
         c.set_saturation(
-            red_ratio * red.get_saturation() + green_ratio * green.get_saturation() + blue_ratio * blue.get_saturation())
+            red_part * red.get_saturation() + green_part * green.get_saturation() + blue_part * blue.get_saturation())
         c.set_luminance(
-            red_ratio * red.get_luminance() + green_ratio * green.get_luminance() + blue_ratio * blue.get_luminance())
+            red_part * red.get_luminance() + green_part * green.get_luminance() + blue_part * blue.get_luminance())
 
         theme.append(c)
     return theme
