@@ -7,33 +7,76 @@ from colour import Color
 from skimage.exposure import match_histograms
 from skimage.transform import resize
 
-from mola.utils import gray, gradient, closest, RED, GREEN, BLUE
+from mola.utils import luminance, gradient, RED, GREEN, BLUE, is_mostly, print_theme, to_array
 
 LOG = logging.getLogger(__name__)
 
 
-def extend_theme(histograms, theme: List[Color]) -> List[Color]:
+def channel_theme(theme: List[Color], channel: int, white: Color, black: Color) -> List[Color]:
+    # noinspection PyTypeChecker
+    c_theme: List[Color] = [None] * 256
+    c_theme[0] = black
+    c_theme[255] = white
+
+    # select colors related to the channel
+    for color in theme:
+        if is_mostly(color, channel):
+            c_theme[luminance(color)] = color
+
+    # fill gaps with gradient
+    last_filled = -1
+    for index in range(len(c_theme)):
+        if c_theme[index] is None or index <= last_filled:
+            continue
+        if last_filled >= 0:
+            fill = gradient(c_theme[last_filled], c_theme[index], index - last_filled)
+            for i in range(len(fill)):
+                c_theme[last_filled + 1 + i] = fill[i]
+        last_filled = index
+
+    print_theme(c_theme)
+
+    return c_theme
+
+
+def create_theme(histograms, theme: List[Color]) -> List[Color]:
     """
     Match color theme to the histogram to produce 256 colors used to create the reference image
     :param histograms: image histograms
     :param theme: selected colors
     :return: 256 color theme
     """
-    theme.sort(key=lambda c: gray(c))
-    white_representation: Color = theme.pop()
-    colors: List[Color] = [theme.pop(0)]
-    i_last: int = 0
-    for i in range(256):
-        color = theme[0]
-        if gray(color) == i:
-            theme.pop(0)
-            colors.extend(gradient(colors[len(colors) - 1], color, i - i_last))
-            i_last = i
-            if len(theme) == 0:
-                break
-    colors.extend(gradient(colors[len(colors) - 1], white_representation, 256 - len(colors) + 1))
+    theme.sort(key=lambda c: luminance(c))
+    white: Color = theme.pop()
+    black: Color = theme.pop(0)
+    channel_themes = []
+    for channel in [RED, GREEN, BLUE]:
+        channel_themes.append(channel_theme(theme, channel, white, black))
+
     theme.clear()
-    theme.extend(colors)
+    for i in range(256):
+        total = histograms[RED][i] + histograms[GREEN][i] + histograms[BLUE][i]
+        if total == 0:
+            # append black since this won't be in the reference image anyway - no values in histogram
+            theme.append(Color())
+            continue
+        red_ratio = histograms[RED][i] / total
+        green_ratio = histograms[GREEN][i] / total
+        blue_ratio = histograms[BLUE][i] / total
+
+        red = channel_themes[RED][i]
+        green = channel_themes[GREEN][i]
+        blue = channel_themes[BLUE][i]
+
+        # linear interpolation in the HSL space
+        c = Color()
+        c.set_hue(red_ratio * red.get_hue() + green_ratio * green.get_hue() + blue_ratio * blue.get_hue())
+        c.set_saturation(
+            red_ratio * red.get_saturation() + green_ratio * green.get_saturation() + blue_ratio * blue.get_saturation())
+        c.set_luminance(
+            red_ratio * red.get_luminance() + green_ratio * green.get_luminance() + blue_ratio * blue.get_luminance())
+
+        theme.append(c)
     return theme
 
 
@@ -41,10 +84,11 @@ def to_histogram(image, precision: int):
     """
     Obtain histograms of an image
     :param image: RGB image
-    :param precision:
+    :param precision: pre-scale factor for histogram analysis
     :return: RGB histograms
     """
     if precision < 100:
+        # pre-scale the original image for histogram analysis
         image = resize(image, (image.shape[0] * precision // 100, image.shape[1] * precision // 100))
     red, _ = numpy.histogram(image[:, :, RED].ravel(), bins=256)
     green, _ = numpy.histogram(image[:, :, GREEN].ravel(), bins=256)
@@ -63,8 +107,9 @@ def create_reference_image(colors: List[Color], histograms):
     reference = [[]]
     for i in range(len(colors)):
         # put the calculated number of pixels in the current color in the reference image
-        closest_histogram, color_as_array = closest(colors[i], i)
-        reference[0].extend(int(ceil(histograms[closest_histogram][i])) * [color_as_array])
+        values_in_channel = [histograms[RED][i], histograms[GREEN][i], histograms[BLUE][i]]
+        selected_channel = values_in_channel.index(max(values_in_channel))
+        reference[0].extend(int(ceil(histograms[selected_channel][i])) * [to_array(colors[i])])
     return reference
 
 
@@ -77,5 +122,5 @@ def colorize(image: numpy.ndarray, theme: List[Color], precision: int) -> numpy.
     :return: colorized image
     """
     histograms = to_histogram(image, precision)
-    reference: List = create_reference_image(extend_theme(histograms, theme), histograms)
+    reference: List = create_reference_image(create_theme(histograms, theme), histograms)
     return match_histograms(image, numpy.array(reference), multichannel=True)

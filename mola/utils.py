@@ -26,13 +26,13 @@ def hex_color(value: str) -> str:
         raise ValueError
 
 
-def gray(color: Color) -> int:
+def luminance(color: Color) -> int:
     """
-    Calculate the gray scale of an RGB color
+    Get the color's luminance in as an 8 bit int
     :param color: RGB color
-    :return: gray scale value
+    :return: luminance value
     """
-    return int(round(255 * (0.299 * color.get_red() + 0.587 * color.get_green() + 0.114 * color.get_blue())))
+    return int(round(255 * color.get_luminance()))
 
 
 def gradient(c1: Color, c2: Color, count: int) -> List[Color]:
@@ -43,7 +43,12 @@ def gradient(c1: Color, c2: Color, count: int) -> List[Color]:
     :param count: number of colors in the gradient
     :return: list of colors in the gradient excluding the first color: (c1; c2>
     """
-    return ([] + list(c1.range_to(c2, count)))[1:]
+    colors = [c1]
+    for i in range(1, count):
+        color = Color(hsl=colors[i - 1].get_hsl())
+        color.set_luminance(color.get_luminance() + (c2.get_luminance() - c1.get_luminance()) / count)
+        colors.append(color)
+    return colors[1:]
 
 
 def to_array(color: Color) -> List[int]:
@@ -53,19 +58,6 @@ def to_array(color: Color) -> List[int]:
     :return: list of RGB channel values in the color
     """
     return [int(round(color.get_red() * 255)), int(round(color.get_green() * 255)), int(round(color.get_blue() * 255))]
-
-
-def closest(color: Color, channel_value: int) -> (int, List[int]):
-    """
-    Select channel of the color with value closest to the given one
-    :param color: color to test
-    :param channel_value: value of the color in channel
-    :return: index of the channel with the closest value and color represented as an array of integers
-    """
-    color_as_array = to_array(color)
-    diffs = [abs(color_as_array[RED] - channel_value), abs(color_as_array[GREEN] - channel_value),
-             abs(color_as_array[BLUE] - channel_value)]
-    return diffs.index(min(diffs)), color_as_array
 
 
 def print_theme(theme: List[Color], block_size: int = 1, line_size: int = 32, prefix: str = ''):
@@ -90,3 +82,14 @@ def as_colors(colors: List[str]) -> List[Color]:
     :return: list of colour.Color object
     """
     return [Color(color_hex) for color_hex in set(colors)]
+
+
+def is_mostly(color: Color, channel: int) -> bool:
+    """
+    Decide if the color belongs mostly to a given channel
+    :param color: color to test
+    :param channel: channel to test
+    :return: true if it's the appropriate color for this channel
+    """
+    c_array = to_array(color)
+    return c_array[channel] >= max(c_array)

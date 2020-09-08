@@ -25,11 +25,3 @@ THEMES['challenger-deep'] = ['#cbe3e7', '#1b182c', '#fbfcfc', '#100e23', '#56557
 # Credit https://draculatheme.com
 THEMES['dracula'] = ['#f8f8f2', '#000000', '#4d4d4d', '#ff5555', '#ff6e67', '#50fa7b', '#5af78e', '#f1fa8c', '#f4f99d',
                      '#bd93f9', '#caa9fa', '#ff79c6', '#ff92d0', '#8be9fd', '#9aedfe', '#bfbfbf', '#e6e6e6', '#282a36']
-
-
-def preview_themes():
-    """
-    Prints list of all themes available in the configuration
-    """
-    for theme_name in THEMES.keys():
-        print(f"{theme_name}")
