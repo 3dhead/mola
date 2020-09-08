@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
 
+import sys
 from mola.runner import run
-run()
+try:
+    run()
+except KeyboardInterrupt:
+    sys.exit(1)
