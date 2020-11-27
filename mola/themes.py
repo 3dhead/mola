@@ -13,10 +13,6 @@ THEMES['gruvbox'] = ['#282828', '#cc241d', '#98971a', '#d79921', '#458588', '#b1
                      '#504945', '#665c54', '#7c6f64', '#928374', '#d65d0e', '#32302f', '#bdae93', '#d5c4a1', '#ebdbb2',
                      '#fbf1c7', '#fe8019']
 
-# Credit https://ethanschoonover.com/solarized/
-THEMES['solarized'] = ['#1c1c1c', '#262626', '#585858', '#626262', '#808080', '#8a8a8a', '#e4e4e4', '#ffffd7',
-                       '#af8700', '#d75f00', '#d70000', '#af005f', '#5f5faf', '#0087ff', '#00afaf', '#5f8700']
-
 # Credit https://challenger-deep-theme.github.io/
 THEMES['challenger-deep'] = ['#cbe3e7', '#1b182c', '#fbfcfc', '#100e23', '#565575', '#ff8080', '#ff5458', '#95ffa4',
                              '#62d196', '#ffe9aa', '#ffb378', '#91ddff', '#65b2ff', '#c991e1', '#906cff', '#aaffe4',

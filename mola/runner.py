@@ -7,12 +7,11 @@ import sys
 import tempfile
 import time
 
-import numpy
-from skimage import io
+from PIL import Image
 
 from mola.colorize import colorize
 from mola.themes import THEMES
-from mola.utils import hex_color, print_theme, HEX_PATTERN, as_colors
+from mola.utils import hex_color, HEX_PATTERN, as_colors
 
 
 def parser() -> argparse.ArgumentParser:
@@ -34,10 +33,6 @@ def parser() -> argparse.ArgumentParser:
     # list of colors
     args.add_argument('-c', "--color", dest="color", help="list of HEX colors to use", type=hex_color, action='append',
                       required=False)
-
-    # precision
-    args.add_argument("-p", "--precision", dest="precision", type=int, default=100,
-                      help="Processing precision in range 1-100, 100 being the slowest but most accurate")
 
     # input image
     args.add_argument("input", help="image to colorize")
@@ -67,10 +62,6 @@ def run():
     log = logging.getLogger(__name__)
 
     start = time.time()
-
-    if args.precision < 1 or args.precision > 100:
-        log.error(f"Precision value must be in range 1-100 ({args.precision} given)")
-        sys.exit(1)
 
     # determine target theme
     theme = []
@@ -114,21 +105,17 @@ def run():
     try:
         # read source image
         log.debug(f"Using input file '{args.input}'")
-        image: numpy.ndarray = io.imread(args.input)
-        if len(image.shape) != 3 or image.shape[2] != 3:
-            # validate the input image is RGB
-            log.error(f"Input image doesn't appear to be a color image")
-            sys.exit(1)
+        image: Image = Image.open(args.input)
+        # TODO validate the input image is RGB
     except IOError as err:
         log.error(f"Failed to read file {args.input}. Use --debug for more information")
         log.debug(err)
         sys.exit(1)
 
     # run colorizing
-    log.debug(f"Running colorize with precision {args.precision}")
+    log.debug(f"Running colorize")
     theme = as_colors(theme)
-    colorized: numpy.ndarray = colorize(image, theme, args.precision)
-    print_theme(theme, f"Dumping full 256 color theme:")
+    image = colorize(image, theme)
 
     try:
         # save output
@@ -137,7 +124,7 @@ def run():
             with tempfile.NamedTemporaryFile(suffix=file_extension) as temp:
                 args.output = temp.name
         log.debug(f"Using output path '{args.output}'")
-        io.imsave(args.output, colorized)
+        image.save(args.output, "JPEG")  # TODO extension
     except IOError as err:
         log.error(f"Failed to save file to {args.output}. Use -v for more information")
         log.debug(err)

@@ -34,12 +34,6 @@ The theme colors can be also be retrieved from any file containing HEX colors by
 $ mola -f ~/.config/termite/config --bg-scale input.jpg
 ``` 
 
-If the processing is taking too long it's possible to control the coloring precision by using the `-p` flag, 
-however the results will be less accurate:  
-```shell
-$ mola -t nord -p 50 input.jpg
-```
-
 To enable verbose logs use the `-v` option.
 
 ## Installation
