@@ -26,7 +26,7 @@ $ mola -c "#fff" -c "#e3e3e3" -c "#d5d5d5" -c "#ffff00" --bg-center input.jpg
 
 You can also combine a theme with additional colors as in:
 ```shell
-$ mola -t gruvebox -c "#e3e3e3" -c "#d5d5d5" -c "#ffff00" --bg-scale input.jpg
+$ mola -t gruvbox -c "#e3e3e3" -c "#d5d5d5" -c "#ffff00" --bg-scale input.jpg
 ```
 
 The theme colors can be also be retrieved from any file containing HEX colors by using `-f` option instead of `-t` for example:
