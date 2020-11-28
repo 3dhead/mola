@@ -7,7 +7,7 @@ from PIL import Image
 from colour import Color
 from skimage.exposure import match_histograms
 
-from mola.utils import to_array, print_theme, luminance, distance
+from mola.utils import to_array, print_theme, distance, MODE_RGB
 
 LOG = logging.getLogger(__name__)
 
@@ -41,7 +41,7 @@ def colorize(image: Image, theme: List[Color], precision: int):
     :return: colorized image
     """
 
-    print_theme(theme, "User theme:", block_size=3)
+    print_theme(theme, "User theme:")
 
     palette = []
     result = []
@@ -58,12 +58,12 @@ def colorize(image: Image, theme: List[Color], precision: int):
         result.append(closest)
         palette += to_array(closest)
 
-    print_theme(result, "Target image theme:", block_size=3)
+    print_theme(result, "Target image theme:")
 
     p_img = Image.new('P', (1, 1))
     p_img.putpalette(palette)
 
-    p = image.quantize(palette=p_img, kmeans=4, dither=0).convert('RGB')
+    p = image.quantize(palette=p_img, dither=0).convert(MODE_RGB)
     if precision < 100:
         size = (int(round(p.size[0] * precision / 100)), int(round(p.size[1] * precision / 100)))
         LOG.debug(f"Resizing reference image to {size}")

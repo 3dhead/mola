@@ -12,6 +12,7 @@ HEX_PATTERN: Pattern = re.compile(r"(#[A-Fa-f0-9]{6}|#[A-Fa-f0-9]{3})")
 RED = 0
 GREEN = 1
 BLUE = 2
+MODE_RGB = 'RGB'
 
 LOG = logging.getLogger(__name__)
 
@@ -46,7 +47,7 @@ def to_array(color: Color) -> List[int]:
     return [int(round(color.get_red() * 255)), int(round(color.get_green() * 255)), int(round(color.get_blue() * 255))]
 
 
-def print_theme(theme: List[Color], title: str, block_size: int = 1, line_size: int = 32, prefix: str = ''):
+def print_theme(theme: List[Color], title: str, block_size: int = 3, line_size: int = 32, prefix: str = ''):
     """
     Print theme of colors in 32 character blocks
     :param theme: color theme

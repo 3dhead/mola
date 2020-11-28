@@ -12,7 +12,7 @@ from skimage import io
 
 from mola.colorize import colorize
 from mola.themes import THEMES
-from mola.utils import hex_color, HEX_PATTERN, as_colors
+from mola.utils import hex_color, HEX_PATTERN, as_colors, MODE_RGB
 
 
 def parser() -> argparse.ArgumentParser:
@@ -115,7 +115,7 @@ def run():
         # read source image
         log.debug(f"Using input file '{args.input}'")
         image: Image = Image.open(args.input)
-        if image.mode != "RGB":
+        if image.mode != MODE_RGB:
             # validate the input image is RGB
             log.error(f"Input image doesn't appear to be a color image")
             sys.exit(1)
