@@ -8,6 +8,7 @@ import tempfile
 import time
 
 from PIL import Image
+from skimage import io
 
 from mola.colorize import colorize
 from mola.themes import THEMES
@@ -135,7 +136,7 @@ def run():
             with tempfile.NamedTemporaryFile(suffix=file_extension) as temp:
                 args.output = temp.name
         log.debug(f"Using output path '{args.output}'")
-        image.save(args.output, "JPEG")  # TODO extension
+        io.imsave(args.output, image)
     except IOError as err:
         log.error(f"Failed to save file to {args.output}. Use -v for more information")
         log.debug(err)

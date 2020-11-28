@@ -81,7 +81,24 @@ def as_colors(colors: List[str]) -> List[Color]:
     return [Color(color_hex) for color_hex in set(colors)]
 
 
+def distance(color1, color2) -> float:
+    """
+    Measure distance between two colors using CIELAB color space
+    :param color1: first color
+    :param color2: second color
+    :return: Euclidean distance between two colors in CIELAB color space
+    """
+    lab1 = rgb2lab(to_array(color1))
+    lab2 = rgb2lab(to_array(color2))
+    return pow(lab1[0] - lab2[0], 2) + pow(lab1[1] - lab2[1], 2) + pow(lab1[2] - lab2[2], 2)
+
+
 def rgb2lab(input_color):
+    """
+    Convert between RGB and CIELAB color spaces following implementation from: https://stackoverflow.com/a/16020102
+    :param input_color: color in RGB space
+    :return: color in CIELAB space
+    """
     num = 0
     rgb = [0, 0, 0]
 
@@ -113,21 +130,11 @@ def rgb2lab(input_color):
     for value in xyz:
 
         if value > 0.008856:
-            value = value ** 0.3333333333333333
+            value = value ** 1 / 3
         else:
             value = (7.787 * value) + (16 / 116)
 
         xyz[num] = value
         num = num + 1
 
-    lab = [0, 0, 0]
-
-    l = (116 * xyz[1]) - 16
-    a = 500 * (xyz[0] - xyz[1])
-    b = 200 * (xyz[1] - xyz[2])
-
-    lab[0] = round(l, 4)
-    lab[1] = round(a, 4)
-    lab[2] = round(b, 4)
-
-    return lab
+    return [round((116 * xyz[1]) - 16, 4), round(500 * (xyz[0] - xyz[1]), 4), round(200 * (xyz[1] - xyz[2]), 4)]
