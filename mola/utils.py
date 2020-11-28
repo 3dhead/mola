@@ -65,6 +65,8 @@ def print_theme(theme: List[Color], title: str, block_size: int = 1, line_size: 
                 if i % 32 == 0:
                     print(prefix, end='')
                 print(f'{fg(*to_array(theme[i]))}{block}{fg.rs}', end='\n' if (i + 1) % line_size == 0 else '')
+            if len(theme) < line_size:
+                print(prefix, end='\n')
         except ImportError:
             # sty not available
             pass

@@ -34,6 +34,10 @@ def parser() -> argparse.ArgumentParser:
     args.add_argument('-c', "--color", dest="color", help="list of HEX colors to use", type=hex_color, action='append',
                       required=False)
 
+    # precision
+    args.add_argument("-p", "--precision", dest="precision", type=int, default=100,
+                      help="Processing precision in range 1-100, 100 being the slowest but most accurate")
+
     # input image
     args.add_argument("input", help="image to colorize")
 
@@ -62,6 +66,10 @@ def run():
     log = logging.getLogger(__name__)
 
     start = time.time()
+
+    if args.precision < 1 or args.precision > 100:
+        log.error(f"Precision value must be in range 1-100 ({args.precision} given)")
+        sys.exit(1)
 
     # determine target theme
     theme = []
@@ -106,16 +114,19 @@ def run():
         # read source image
         log.debug(f"Using input file '{args.input}'")
         image: Image = Image.open(args.input)
-        # TODO validate the input image is RGB
+        if image.mode != "RGB":
+            # validate the input image is RGB
+            log.error(f"Input image doesn't appear to be a color image")
+            sys.exit(1)
     except IOError as err:
         log.error(f"Failed to read file {args.input}. Use --debug for more information")
         log.debug(err)
         sys.exit(1)
 
     # run colorizing
-    log.debug(f"Running colorize")
+    log.debug(f"Running colorize with precision {args.precision}")
     theme = as_colors(theme)
-    image = colorize(image, theme)
+    image = colorize(image, theme, args.precision)
 
     try:
         # save output

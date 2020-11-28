@@ -1,8 +1,11 @@
 from copy import deepcopy
 from typing import List
 
+import numpy
 from PIL import Image
 from colour import Color
+from skimage import io
+from skimage.exposure import match_histograms
 
 from mola.utils import to_array, print_theme, luminance, rgb2lab
 
@@ -30,8 +33,8 @@ def distance(color1, color2):
     return pow(lab1[0] - lab2[0], 2) + pow(lab1[1] - lab2[1], 2) + pow(lab1[2] - lab2[2], 2)
 
 
-def colorize(image: Image, theme: List[Color]):
-    print_theme(theme, "theme", block_size=3)
+def colorize(image: Image, theme: List[Color], precision: int):
+    print_theme(sorted(theme, key=luminance), "User theme:", block_size=3)
 
     palette = []
     result = []
@@ -51,11 +54,14 @@ def colorize(image: Image, theme: List[Color]):
         palette.append(closest[1])
         palette.append(closest[2])
 
-    print_theme(sorted(result, key=luminance), "closest", block_size=3)
+    print_theme(sorted(result, key=luminance), "Target image theme:", block_size=3)
 
     p_img = Image.new('P', (1, 1))
     p_img.putpalette(palette)
 
     p = image.quantize(palette=p_img, kmeans=4, dither=0).convert('RGB')
+    if precision < 100:
+        p = p.resize((int(round(p.size[0] * precision / 100)), int(round(p.size[1] * precision / 100))))
 
-    return p
+    reference = numpy.array(p.getdata()).reshape((p.size[0], p.size[1], 3))
+    return Image.fromarray(numpy.uint8(match_histograms(numpy.asarray(image), reference, multichannel=True)))

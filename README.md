@@ -32,7 +32,13 @@ $ mola -t gruvebox -c "#e3e3e3" -c "#d5d5d5" -c "#ffff00" --bg-scale input.jpg
 The theme colors can be also be retrieved from any file containing HEX colors by using `-f` option instead of `-t` for example:
 ```shell
 $ mola -f ~/.config/termite/config --bg-scale input.jpg
-``` 
+```
+
+If the processing is taking too long it's possible to control the coloring precision by using the `-p` flag, 
+however the results will be less accurate:  
+```shell
+$ mola -t nord -p 50 input.jpg
+```
 
 To enable verbose logs use the `-v` option.
 
