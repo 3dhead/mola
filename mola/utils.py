@@ -55,6 +55,7 @@ def print_theme(theme: List[Color], title: str, block_size: int = 1, line_size: 
     :param line_size: length of line of colors
     :param prefix: prefix of every line of colors
     """
+    theme = sorted(theme, key=luminance)
     if LOG.isEnabledFor(logging.DEBUG):
         try:
             # noinspection PyPackageRequirements

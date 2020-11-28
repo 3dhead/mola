@@ -22,7 +22,7 @@ def extract_palette(img):
     paletted = copy.convert('P', palette=Image.ADAPTIVE)
     palette = paletted.getpalette()
     color_counts = sorted(paletted.getcolors(), reverse=True)
-    for i in range(256):
+    for i in range(256):  # TODO handle if failed to extract 256 colors
         palette_index = color_counts[i][1]
         dominant_color = palette[palette_index * 3:palette_index * 3 + 3]
         color = Color()
@@ -41,7 +41,7 @@ def colorize(image: Image, theme: List[Color], precision: int):
     :return: colorized image
     """
 
-    print_theme(sorted(theme, key=luminance), "User theme:", block_size=3)
+    print_theme(theme, "User theme:", block_size=3)
 
     palette = []
     result = []
@@ -56,12 +56,9 @@ def colorize(image: Image, theme: List[Color], precision: int):
                 min_diff = diff
                 closest = from_palette
         result.append(closest)
-        closest = to_array(closest)
-        palette.append(closest[0])
-        palette.append(closest[1])
-        palette.append(closest[2])
+        palette += to_array(closest)
 
-    print_theme(sorted(result, key=luminance), "Target image theme:", block_size=3)
+    print_theme(result, "Target image theme:", block_size=3)
 
     p_img = Image.new('P', (1, 1))
     p_img.putpalette(palette)

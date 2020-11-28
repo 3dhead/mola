@@ -10,6 +10,7 @@ class TestCLIArguments(unittest.TestCase):
         args = self.parser.parse_args('input.jpg'.split())
         self.assertEqual("input.jpg", args.input)
         self.assertIsNone(args.output)
+        self.assertEqual(100, args.precision)
         self.assertIsNone(args.theme)
         self.assertIsNone(args.color)
         self.assertIsNone(args.feh_opt)
