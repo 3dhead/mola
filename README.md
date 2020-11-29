@@ -57,7 +57,6 @@ Currently included themes:
 More to follow... Contributions are welcome.
 
 ## Issues and limitations
-- Performance
-- Artifacts
+- Performance is still far from optimal. Processing large images with high precision can sometimes take > 20s, which needs to be improved
 - In general JPEG compression artifacts don't play well with histogram matching algorithm - results of processing highly compressed images will most likely not be satisfactory 
 - At the moment `mola` depends on both `Pillow` and `scikit-image` - hopefully one of those will be removed  
