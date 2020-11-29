@@ -144,7 +144,9 @@ def run():
 
     if call_feh:
         # call feh to set wallpaper
-        feh_attributes = [temp.name, '--no-fehbg', args.feh_opt if args.feh_opt else '--bg-scale']
+        feh_attributes = [temp.name, '--no-fehbg']
+        if args.feh_opt:
+            feh_attributes += args.feh_opt
         log.debug(f"Running feh with attributes: {feh_attributes}")
         subprocess.run(["feh"] + feh_attributes)
 

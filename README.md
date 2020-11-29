@@ -3,6 +3,8 @@
 Tool for coloring images according to a defined color theme. Provides a wrapper for `feh` as well as definitions
 of common terminal themes to allow user to quickly set any wallpaper matching the terminal colors.
 
+## Results
+
 ## Usage
 
 Colorize input image using a nord theme and store the result in a file:
@@ -49,3 +51,10 @@ $ git clone https://github.com/xmonarch/mola.git
 $ cd mola
 $ sudo pip install .
 ```
+
+## Issues
+- Performance
+- Artifacts
+- JPEG artifacts
+- Dependencies
+- More themes
