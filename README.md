@@ -13,11 +13,6 @@ $ mola -t nord -o output.jpg input.jpg
 ```
 Colorize input image using a nord theme and set as wallpaper using `feh`:
 ```shell
-$ mola -t nord input.jpg
-```
-
-Previous command defaults to `--bg-scale` attribute in `feh`, however other options can also be passed as parameter to `mola`:
-```shell
 $ mola -t nord --bg-fill input.jpg
 ```
 
