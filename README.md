@@ -11,6 +11,7 @@ Colorize input image using a nord theme and store the result in a file:
 ```shell
 $ mola -t nord -o output.jpg input.jpg
 ```
+
 Colorize input image using a nord theme and set as wallpaper using `feh`:
 ```shell
 $ mola -t nord --bg-fill input.jpg
@@ -47,9 +48,16 @@ $ cd mola
 $ sudo pip install .
 ```
 
-## Issues
+## Themes
+
+Currently included themes:
+- `gruvbox` (credit: https://github.com/morhetz/gruvbox)
+- `nord` (credit: https://www.nordtheme.com/)
+
+More to follow... Contributions are welcome.
+
+## Issues and limitations
 - Performance
 - Artifacts
-- JPEG artifacts
-- Dependencies
-- More themes
+- In general JPEG compression artifacts don't play well with histogram matching algorithm - results of processing highly compressed images will most likely not be satisfactory 
+- At the moment `mola` depends on both `Pillow` and `scikit-image` - hopefully one of those will be removed  
