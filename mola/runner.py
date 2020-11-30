@@ -150,6 +150,9 @@ def run():
         log.debug(f"Running feh with attributes: {feh_attributes}")
         subprocess.run(["feh"] + feh_attributes)
 
+        log.debug(f"Clean up temporary file")
+        os.remove(temp.name)
+
     log.debug("Done. That took {:.2f}s".format(time.time() - start))
 
 

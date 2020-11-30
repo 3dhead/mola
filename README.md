@@ -51,8 +51,14 @@ $ sudo pip install .
 ## Themes
 
 Currently included themes:
-- `gruvbox` (credit: https://github.com/morhetz/gruvbox)
-- `nord` (credit: https://www.nordtheme.com/)
+- `ashes` (source: https://terminal.sexy/)
+- `gruvbox` (source: https://github.com/morhetz/gruvbox)
+- `mocha` (source: https://terminal.sexy/)
+- `monokai` (source: https://terminal.sexy/)
+- `nord` (source: https://www.nordtheme.com/)
+- `ocean` (source: https://terminal.sexy/)
+- `tomorrow` (source: https://terminal.sexy/)
+- `twilight` (source: https://terminal.sexy/)
 
 More to follow... Contributions are welcome.
 

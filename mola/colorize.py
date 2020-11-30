@@ -49,12 +49,12 @@ def colorize(image: Image, theme: List[Color], precision: int):
         min_diff = -1
         closest = Color("white")
         for from_palette in theme:
-            cloned = deepcopy(from_palette)
-            cloned.set_luminance(original.get_luminance())
-            diff = distance(cloned, original)
+            luminance_adjusted = deepcopy(from_palette)
+            luminance_adjusted.set_luminance(original.get_luminance())
+            diff = distance(luminance_adjusted, original)
             if min_diff < 0 or diff < min_diff:
                 min_diff = diff
-                closest = from_palette
+                closest = luminance_adjusted
         result.append(closest)
         palette += to_array(closest)
 
