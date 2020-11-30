@@ -1,13 +1,12 @@
+import colorsys
 import logging
-from copy import deepcopy
 from typing import List
 
 import numpy
 from PIL import Image
-from colour import Color
 from skimage.exposure import match_histograms
 
-from mola.utils import to_array, print_theme, distance, MODE_RGB
+from mola.utils import print_theme, distance, MODE_RGB, with_luminance, luminance
 
 LOG = logging.getLogger(__name__)
 
@@ -29,15 +28,10 @@ def extract_palette(img):
         size = int(size / 2)
     for i in range(size):
         palette_index = color_counts[i][1]
-        dominant_color = palette[palette_index * 3:palette_index * 3 + 3]
-        color = Color()
-        color.set_red(dominant_color[0] / 255.0)
-        color.set_green(dominant_color[1] / 255.0)
-        color.set_blue(dominant_color[2] / 255.0)
-        yield color
+        yield palette[palette_index * 3:palette_index * 3 + 3]
 
 
-def colorize(image: Image, theme: List[Color], aggressive: bool, precision: int):
+def colorize(image: Image, theme: List, aggressive: bool, precision: int):
     """
     Colorize input image with a selected list of colors.
     :param image: input image
@@ -46,7 +40,6 @@ def colorize(image: Image, theme: List[Color], aggressive: bool, precision: int)
     :param precision: selected precision of the algorithm
     :return: colorized image
     """
-
     print_theme(theme, "User theme:")
 
     palette = []
@@ -54,18 +47,17 @@ def colorize(image: Image, theme: List[Color], aggressive: bool, precision: int)
     image_palette = extract_palette(image)
     for original in image_palette:
         min_diff = -1
-        closest = Color("white")
+        closest = [1, 1, 1]
         for from_palette in theme:
             color = from_palette
             if not aggressive:
-                color = deepcopy(from_palette)
-                color.set_luminance(original.get_luminance())
+                color = with_luminance(from_palette, luminance(original))
             diff = distance(color, original)
             if min_diff < 0 or diff < min_diff:
                 min_diff = diff
                 closest = color
         result.append(closest)
-        palette += to_array(closest)
+        palette += closest
 
     print_theme(result, "Target image theme:")
 

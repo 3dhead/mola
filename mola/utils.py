@@ -1,12 +1,12 @@
+import colorsys
 import logging
 import re
 from re import Pattern
 from typing import List
 
-from colour import Color
+from PIL import ImageColor
 
-# Pattern for matching HEX colors
-HEX_PATTERN: Pattern = re.compile(r"(#[A-Fa-f0-9]{6}|#[A-Fa-f0-9]{3})")
+HEX_PATTERN: Pattern = re.compile(r"(#[A-Fa-f0-9]{6}|#[A-Fa-f0-9]{3})")  # Pattern for matching HEX colors
 
 # channel indexes
 RED = 0
@@ -29,25 +29,28 @@ def hex_color(value: str) -> str:
         raise ValueError
 
 
-def luminance(color: Color) -> int:
+def luminance(color) -> float:
     """
     Get the color's luminance in as an 8 bit int
     :param color: RGB color
     :return: luminance value
     """
-    return int(round(255 * color.get_luminance()))
+    return colorsys.rgb_to_hls(*[x / 255.0 for x in color])[1]
 
 
-def to_array(color: Color) -> List[int]:
+def with_luminance(color, brightness):
     """
-    Represent a color object as an array of integers with values for separate RGB channels
-    :param color: color object
-    :return: list of RGB channel values in the color
+    Adjust RGB color luminance
+    :param color: RGB color
+    :param brightness: new luminance value
+    :return: RGB with modified luminance
     """
-    return [int(round(color.get_red() * 255)), int(round(color.get_green() * 255)), int(round(color.get_blue() * 255))]
+    hls = colorsys.rgb_to_hls(*[x / 255.0 for x in color])
+    ret = [int(round(x * 255.0)) for x in colorsys.hls_to_rgb(hls[0], brightness, hls[2])]
+    return ret
 
 
-def print_theme(theme: List[Color], title: str, block_size: int = 3, line_size: int = 32, prefix: str = ''):
+def print_theme(theme: List, title: str, block_size: int = 3, line_size: int = 32, prefix: str = ''):
     """
     Print theme of colors in 32 character blocks
     :param theme: color theme
@@ -66,7 +69,7 @@ def print_theme(theme: List[Color], title: str, block_size: int = 3, line_size: 
             for i in range(len(theme)):
                 if i % 32 == 0:
                     print(prefix, end='')
-                print(f'{fg(*to_array(theme[i]))}{block}{fg.rs}', end='\n' if (i + 1) % line_size == 0 else '')
+                print(f'{fg(*theme[i])}{block}{fg.rs}', end='\n' if (i + 1) % line_size == 0 else '')
             if len(theme) < line_size:
                 print(prefix, end='\n')
         except ImportError:
@@ -74,24 +77,24 @@ def print_theme(theme: List[Color], title: str, block_size: int = 3, line_size: 
             pass
 
 
-def as_colors(colors: List[str]) -> List[Color]:
+def as_colors(colors: List[str]) -> List:
     """
     Convert list of HEX color representations into a list of color objects
     :param colors: list of HEX colors for a theme
-    :return: list of colour.Color object
+    :return: list of RGB colors
     """
-    return [Color(color_hex) for color_hex in set(colors)]
+    return [ImageColor.getcolor(color_hex, MODE_RGB) for color_hex in set(colors)]
 
 
 def distance(color1, color2) -> float:
     """
-    Measure distance between two colors using CIELAB color space
+    Measure distance between two colors using HSL color space
     :param color1: first color
     :param color2: second color
-    :return: Euclidean distance between two colors in CIELAB color space
+    :return: Euclidean distance between two colors in HSL color space
     """
-    lab1 = rgb2lab(to_array(color1))
-    lab2 = rgb2lab(to_array(color2))
+    lab1 = rgb2lab(color1)
+    lab2 = rgb2lab(color2)
     return pow(lab1[0] - lab2[0], 2) + pow(lab1[1] - lab2[1], 2) + pow(lab1[2] - lab2[2], 2)
 
 
