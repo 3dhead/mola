@@ -37,11 +37,12 @@ def extract_palette(img):
         yield color
 
 
-def colorize(image: Image, theme: List[Color], precision: int):
+def colorize(image: Image, theme: List[Color], aggressive: bool, precision: int):
     """
     Colorize input image with a selected list of colors.
     :param image: input image
     :param theme: selected list of colors
+    :param aggressive: true if colorizing should be more aggressive
     :param precision: selected precision of the algorithm
     :return: colorized image
     """
@@ -55,12 +56,14 @@ def colorize(image: Image, theme: List[Color], precision: int):
         min_diff = -1
         closest = Color("white")
         for from_palette in theme:
-            luminance_adjusted = deepcopy(from_palette)
-            luminance_adjusted.set_luminance(original.get_luminance())
-            diff = distance(luminance_adjusted, original)
+            color = from_palette
+            if not aggressive:
+                color = deepcopy(from_palette)
+                color.set_luminance(original.get_luminance())
+            diff = distance(color, original)
             if min_diff < 0 or diff < min_diff:
                 min_diff = diff
-                closest = luminance_adjusted
+                closest = color
         result.append(closest)
         palette += to_array(closest)
 

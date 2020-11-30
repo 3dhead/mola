@@ -22,6 +22,10 @@ def parser() -> argparse.ArgumentParser:
     args.add_argument("-v", "--verbose", dest="log_level", help="enable verbose logging", action="store_const",
                       const=logging.DEBUG, default=logging.ERROR)
 
+    # aggressive mode
+    args.add_argument("-a", "--aggressive", dest="aggressive", help="enable more aggressive colorizing",
+                      action="store_const", const=True, default=False)
+
     source = args.add_mutually_exclusive_group()
 
     # theme
@@ -127,7 +131,7 @@ def run():
     # run colorizing
     log.debug(f"Running colorize with precision {args.precision}")
     theme = as_colors(theme)
-    image = colorize(image, theme, args.precision)
+    image = colorize(image, theme, args.aggressive, args.precision)
 
     try:
         # save output

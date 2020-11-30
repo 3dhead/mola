@@ -5,6 +5,44 @@ of common terminal themes to allow user to quickly set any wallpaper matching th
 
 ## Results
 
+### Original Image
+
+![Original](/images/original.jpg)
+
+By [ALEXANDRE DINAUT](https://unsplash.com/@alexdinaut) available [here](https://unsplash.com/photos/zqxnyb7M5kI)
+
+In all cases the image has been processing with 50% precision. 
+
+### nord
+
+Regular:
+
+![nord](/images/nord.jpg)
+
+Aggressive:
+
+![nord_aggressive](/images/nord_a.jpg)
+
+### gruvbox
+
+Regular:
+
+![gruvbox](/images/gruvbox.jpg)
+
+Aggressive:
+
+![gruvbox_aggressive](/images/gruvbox_a.jpg)
+
+### mocha
+
+Regular:
+
+![mocha](/images/mocha.jpg)
+
+Aggressive:
+
+![mocha_aggressive](/images/mocha_a.jpg)
+
 ## Usage
 
 Colorize input image using a nord theme and store the result in a file:
