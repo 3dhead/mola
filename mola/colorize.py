@@ -1,4 +1,3 @@
-import colorsys
 import logging
 from typing import List
 
@@ -47,8 +46,8 @@ def colorize(image: Image, theme: List, aggressive: bool, precision: int):
     image_palette = extract_palette(image)
     for original in image_palette:
         min_diff = -1
-        closest = [1, 1, 1]
-        for from_palette in theme:
+        closest = [1.0, 1.0, 1.0]
+        for from_palette in sorted(theme, key=luminance):
             color = from_palette
             if not aggressive:
                 color = with_luminance(from_palette, luminance(original))
