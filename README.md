@@ -3,7 +3,7 @@
 Tool for coloring images according to a defined color theme. Provides a wrapper for `feh` as well as definitions
 of common terminal themes to allow user to quickly set any wallpaper matching the terminal colors.
 
-When it comes to image colorizing `mola` offers two processing modes: a default one and an "aggressive" mode enabled with `-a` flag. Depending on the input image one mode can work better than the other. In general the default mode is more smooth but in some cases the aggressive mode produces a more interesting results.  
+When it comes to image colorizing `mola` offers two processing modes: a default one and an "aggressive" mode enabled with `-a` flag. Depending on the input image one mode can work better than the other. In general the default mode is more smooth but in some cases the aggressive mode produces more interesting results.  
 
 ## Results
 
@@ -72,7 +72,7 @@ however the results will be less accurate:
 $ mola -t nord -p 50 input.jpg
 ```
 
-To enable verbose logs use the `-v` option.
+To enable verbose output use the `-v` option.
 
 ## Installation
 
@@ -97,6 +97,6 @@ Currently included themes:
 More to follow... Contributions are welcome.
 
 ## Issues and limitations
-- Performance is still far from optimal. Processing large images with high precision can sometimes take > 20s, which needs to be improved
+- Performance is still far from optimal. Processing large images (>= 4k) with high precision can sometimes take > 20s, which needs to be improved
 - In general JPEG compression artifacts don't play well with histogram matching algorithm - results of processing highly compressed images will most likely not be satisfactory 
 - At the moment `mola` depends on both `Pillow` and `scikit-image` - hopefully one of those will be removed  
