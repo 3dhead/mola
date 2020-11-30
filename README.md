@@ -3,45 +3,41 @@
 Tool for coloring images according to a defined color theme. Provides a wrapper for `feh` as well as definitions
 of common terminal themes to allow user to quickly set any wallpaper matching the terminal colors.
 
+When it comes to image colorizing `mola` offers two processing modes: a default one and an "aggressive" mode enabled with `-a` flag. Depending on the input image one mode can work better than the other. In general the default mode is more smooth but in some cases the aggressive mode produces a more interesting results.  
+
 ## Results
 
 ### Original Image
 
-![Original](/images/original.jpg)
-
 By [ALEXANDRE DINAUT](https://unsplash.com/@alexdinaut) available [here](https://unsplash.com/photos/zqxnyb7M5kI)
 
-In all cases the image has been processing with 50% precision. 
+![Original](/samples/original.jpg)
+
+In all cases the image has been processing with 50% precision. In order to illustrate the difference between processing modes the output was generated for both default and aggressive mode. 
 
 ### nord
 
-Regular:
+![nord](/samples/nord.jpg)
 
-![nord](/images/nord.jpg)
+### nord -a
 
-Aggressive:
-
-![nord_aggressive](/images/nord_a.jpg)
+![nord_aggressive](/samples/nord_a.jpg)
 
 ### gruvbox
 
-Regular:
+![gruvbox](/samples/gruvbox.jpg)
 
-![gruvbox](/images/gruvbox.jpg)
+### gruvbox -a
 
-Aggressive:
-
-![gruvbox_aggressive](/images/gruvbox_a.jpg)
+![gruvbox_aggressive](/samples/gruvbox_a.jpg)
 
 ### mocha
 
-Regular:
+![mocha](/samples/mocha.jpg)
 
-![mocha](/images/mocha.jpg)
+### mocha -a
 
-Aggressive:
-
-![mocha_aggressive](/images/mocha_a.jpg)
+![mocha_aggressive](/samples/mocha_a.jpg)
 
 ## Usage
 
