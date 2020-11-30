@@ -1,6 +1,7 @@
 import colorsys
 import logging
 import re
+from math import sqrt
 from re import Pattern
 from typing import List
 
@@ -46,8 +47,7 @@ def with_luminance(color, brightness):
     :return: RGB with modified luminance
     """
     hls = colorsys.rgb_to_hls(*[x / 255.0 for x in color])
-    ret = [int(round(x * 255.0)) for x in colorsys.hls_to_rgb(hls[0], brightness, hls[2])]
-    return ret
+    return [int(round(x * 255.0)) for x in colorsys.hls_to_rgb(hls[0], brightness, hls[2])]
 
 
 def print_theme(theme: List, title: str, block_size: int = 3, line_size: int = 32, prefix: str = ''):
@@ -95,4 +95,6 @@ def distance(color1, color2) -> float:
     """
     hls1 = colorsys.rgb_to_hls(*[x / 255.0 for x in color1])
     hls2 = colorsys.rgb_to_hls(*[x / 255.0 for x in color2])
-    return min(abs(hls1[1] - hls2[1]), 1 - abs(hls1[1] - hls2[1])) / 2
+    dl = min(abs(hls1[1] - hls2[1]), 1 - abs(hls1[1] - hls2[1])) / 2
+    ds = hls1[2] - hls2[2]
+    return sqrt(dl * dl + ds * ds)
