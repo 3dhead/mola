@@ -23,7 +23,7 @@ def extract_palette(img):
     palette = paletted.getpalette()
     color_counts = sorted(paletted.getcolors(), reverse=True)
 
-    extracted = 0 if len(color_counts) == 0 else 2 ** math.floor(math.log2(len(color_counts)))
+    extracted = 2 ** math.floor(math.log2(len(color_counts)))
     LOG.debug(f"Extracted {extracted} colors from the image.")
     for i in range(extracted):
         palette_index = color_counts[i][1]
