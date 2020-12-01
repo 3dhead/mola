@@ -3,7 +3,7 @@ import pathlib
 from setuptools import setup
 
 setup(name='mola',
-      version='0.1.1',
+      version='0.1.2',
       author='xmonarch',
       author_email='xmonarch64@gmail.com',
       packages=['mola'],
