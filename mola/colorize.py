@@ -1,3 +1,4 @@
+import itertools
 import logging
 from typing import List
 
@@ -41,27 +42,17 @@ def colorize(image: Image, theme: List, aggressive: bool, precision: int):
     """
     print_theme(theme, "User theme:")
 
-    palette = []
-    result = []
+    theme = sorted(theme, key=luminance)
     image_palette = extract_palette(image)
-    for original in image_palette:
-        min_diff = -1
-        closest = [1.0, 1.0, 1.0]
-        for from_palette in sorted(theme, key=luminance):
-            color = from_palette
-            if not aggressive:
-                color = with_luminance(from_palette, luminance(original))
-            diff = distance(color, original)
-            if min_diff < 0 or diff < min_diff:
-                min_diff = diff
-                closest = color
-        result.append(closest)
-        palette += closest
 
-    print_theme(result, "Target image theme:")
+    theme = [min(theme, key=lambda c: distance(c if aggressive else with_luminance(c, luminance(source)), source)) for
+             source in image_palette]
+    print_theme(theme, "Target image theme:")
+
+    target_palette = list(itertools.chain(*theme))
 
     p_img = Image.new('P', (1, 1))
-    p_img.putpalette(palette * int(768 / len(palette)))
+    p_img.putpalette(target_palette * int(768 / len(target_palette)))
 
     p = image.quantize(palette=p_img, dither=0).convert(MODE_RGB)
     if precision < 100:
