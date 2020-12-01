@@ -1,5 +1,6 @@
 import itertools
 import logging
+import math
 from typing import List
 
 import numpy
@@ -22,11 +23,9 @@ def extract_palette(img):
     palette = paletted.getpalette()
     color_counts = sorted(paletted.getcolors(), reverse=True)
 
-    size = 256
-    while len(color_counts) < size:
-        LOG.debug(f"Failed to extract {size} colors from the image. Trying with a smaller palette.")
-        size = int(size / 2)
-    for i in range(size):
+    extracted = 0 if len(color_counts) == 0 else 2 ** math.floor(math.log2(len(color_counts)))
+    LOG.debug(f"Extracted {extracted} colors from the image.")
+    for i in range(extracted):
         palette_index = color_counts[i][1]
         yield palette[palette_index * 3:palette_index * 3 + 3]
 
