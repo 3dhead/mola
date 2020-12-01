@@ -6,7 +6,7 @@ import numpy
 from PIL import Image
 from skimage.exposure import match_histograms
 
-from mola.utils import print_theme, distance, MODE_RGB, with_luminance, luminance
+from mola.utils import print_theme, distance, MODE_RGB, assume_luminance, luminance
 
 LOG = logging.getLogger(__name__)
 
@@ -45,14 +45,18 @@ def colorize(image: Image, theme: List, aggressive: bool, precision: int):
     theme = sorted(theme, key=luminance)
     image_palette = extract_palette(image)
 
-    theme = [min(theme, key=lambda c: distance(c if aggressive else with_luminance(c, luminance(source)), source)) for
-             source in image_palette]
-    print_theme(theme, "Target image theme:")
+    result = []
+    for source in image_palette:
+        closest = min(theme, key=lambda c: distance(c, source))
+        if not aggressive:
+            closest = assume_luminance(closest, source)
+        result.append(closest)
+    palette = list(itertools.chain(*result))
 
-    target_palette = list(itertools.chain(*theme))
+    print_theme(result, "Target image theme:")
 
     p_img = Image.new('P', (1, 1))
-    p_img.putpalette(target_palette * int(768 / len(target_palette)))
+    p_img.putpalette(palette * int(768 / len(palette)))
 
     p = image.quantize(palette=p_img, dither=0).convert(MODE_RGB)
     if precision < 100:

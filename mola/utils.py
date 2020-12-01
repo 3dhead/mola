@@ -39,15 +39,15 @@ def luminance(color) -> float:
     return colorsys.rgb_to_hls(*[x / 255.0 for x in color])[1]
 
 
-def with_luminance(color, brightness):
+def assume_luminance(target, source):
     """
     Adjust RGB color luminance
-    :param color: RGB color
-    :param brightness: new luminance value
+    :param target: RGB color
+    :param source: color from which luminance will be assumed
     :return: RGB with modified luminance
     """
-    hls = colorsys.rgb_to_hls(*[x / 255.0 for x in color])
-    return [int(round(x * 255.0)) for x in colorsys.hls_to_rgb(hls[0], brightness, hls[2])]
+    hls = colorsys.rgb_to_hls(*[x / 255.0 for x in target])
+    return [int(round(x * 255.0)) for x in colorsys.hls_to_rgb(hls[0], luminance(source), hls[2])]
 
 
 def print_theme(theme: List, title: str, block_size: int = 3, line_size: int = 32, prefix: str = ''):
@@ -91,10 +91,10 @@ def distance(color1, color2) -> float:
     Measure distance between two colors using HSL color space
     :param color1: first color
     :param color2: second color
-    :return: Euclidean distance between two colors in HSL color space
+    :return: Euclidean distance between two colors in HSL color space, disregarding luminance value
     """
     hls1 = colorsys.rgb_to_hls(*[x / 255.0 for x in color1])
     hls2 = colorsys.rgb_to_hls(*[x / 255.0 for x in color2])
-    dl = min(abs(hls1[1] - hls2[1]), 1 - abs(hls1[1] - hls2[1])) / 2
+    dh = min(abs(hls1[0] - hls2[0]), 1 - abs(hls1[0] - hls2[0])) / 2
     ds = hls1[2] - hls2[2]
-    return sqrt(dl * dl + ds * ds)
+    return sqrt(dh * dh + ds * ds)
